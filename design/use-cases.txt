@@ -1,21 +1,34 @@
-Site: customer.ptwsmarthouse.it
-
 There are two types of users:
 1) user Person
 2) user IoT device
 
-The customer can interact with the subdomain website by carrying out various tasks:
+The person can has one of these roles:
+- Operator
+- Admin Customer
+- Customer
+
+------------------------------
+
+Site: customer.ptwsmarthouse.it
+
+1) Person
+The customer and admin customer can:
 - login with email and password
 - reset password (*) (implement email system)
-- change password from "account section"
+- change password (after first login or from "account" section)
 - interact with IoT devices
   - switch on/off
-  - set schedule or timer
+  - set schedule or timer (schedule is set on the server or on the IoT device)
   - check connection
-- add new IoT devices
-- delete an IoT device
 - contact customer service
 
+The Admin Customer can:
+- manage virtual house accounts
+  - add/remove account
+  - grant/revoke administrator permission
+- add/delete new IoT device
+
+2) IoT Device
 The IoT device can:
 - connect to the server
 - send data
@@ -25,12 +38,18 @@ The IoT device can:
 
 Site: management.ptwsmarthouse.it
 
-The user of this subdomain can:
+1) Person
+The operator of this subdomain can:
 - login with username and password
-- create customer accounts
-- delete customer accounts
-- add customer account to existing house
+- create/delete/modify a "virtual house"
+- manage customer accounts
+  - view all customer accounts of a virtual house
+  - grant/revoke administrator permission (there must be at least one administrator customer)
+  - create/delete/modify customer accounts (the account are created with a random generated password
+  sent via email that the customers must change when logging for the first time)
+  - add customer account to existing "virtual house"
 - manage sensors in virtual house
   - add sensor
-  - modify sensor
+  - modify sensor informations
   - delete sensor
+- View all sensors states (the almost same view of the customer subdomain)

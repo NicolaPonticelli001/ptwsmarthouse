@@ -4,5 +4,23 @@ manage the customers account;
 - customer.ptwsmarthouse.it: this is the subdomain reserved for the customers who will
 manage the IoT device with.
 The customer's website is general for everyone but the content will change according to the user
-(dynamic website). There will be one applicative role for the user and any user can manage the
-IoT devices.
+(dynamic website). Any user that is a customer can switch on/off the IoT devices but only the administrator
+add/remove an account or IoT devices (he can give also this permission. The system
+is similar to administrators of Whatsapp groups).
+
+The operators must set up the "virtual house" for the customer: they assign the space on the website,
+create credentials for the customer and can, eventually, add sensors. The operators create an
+automatically-generated password which the customer must change after logging the first time.
+The operators can also delete a "virtual house", delete/add/modify customer's account and delete/add/modify IoT devices.
+
+FUTURE IMPLEMENTATIONS
+- Option in login phase to register the device as trusted (2FA needed)
+- 2 Factor Authentication
+  - Auth code (eg. Google Authenticator)
+  - Email code
+  - Sms code
+  - Give consent from mobile App
+- Mobile App
+- API in order to make a custom IoT device interact with the server
+- Manage more houses with the same account
+- Trusted devices: list of trusted devices (remove or block IP) and list of active sessions (remove)
