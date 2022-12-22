@@ -4,17 +4,16 @@ There are two types of users:
 
 The person can has one of these roles:
 - Operator
-- Admin Customer
-- Customer
+- Customer (with or without permissions)
 
 ------------------------------
 
 Site: customer.ptwsmarthouse.it
 
 1) Person
-The customer and admin customer can:
+The customer without permission can can:
 - login with email and password
-- reset password (*) (implement email system)
+- reset forgotten password (*) (implement email system)
 - change password (after first login or from "account" section)
 - interact with IoT devices
   - switch on/off
@@ -22,11 +21,13 @@ The customer and admin customer can:
   - check connection
 - contact customer service
 
-The Admin Customer can:
+The privileges are:
 - manage virtual house accounts
   - add/remove account
-  - grant/revoke administrator permission
-- add/delete new IoT device
+  - grant/revoke permission to accounts
+- manage IoT devices
+ - add/remove IoT device
+ - modify IoTdevice
 
 2) IoT Device
 The IoT device can:
@@ -38,18 +39,20 @@ The IoT device can:
 
 Site: management.ptwsmarthouse.it
 
-1) Person
+1) Operator
 The operator of this subdomain can:
 - login with username and password
-- create/delete/modify a "virtual house"
+ - manage a virtual house:
+ create/delete account
+ - modify the house informations
 - manage customer accounts
   - view all customer accounts of a virtual house
-  - grant/revoke administrator permission (there must be at least one administrator customer)
-  - create/delete/modify customer accounts (the account are created with a random generated password
-  sent via email that the customers must change when logging for the first time)
+  - grant/revoke permissions (there must be at least one customer with all permissions)
+  - create/delete/modify customer accounts (the accounts can be created with an email address and
+	a random generated password sent via that email)
   - add customer account to existing "virtual house"
 - manage sensors in virtual house
   - add sensor
   - modify sensor informations
   - delete sensor
-- View all sensors states (the almost same view of the customer subdomain)
+- View all sensors states (almost the same view of the customer subdomain)

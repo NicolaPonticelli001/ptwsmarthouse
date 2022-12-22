@@ -3,10 +3,9 @@ There are two subdomain:
 manage the customers account;
 - customer.ptwsmarthouse.it: this is the subdomain reserved for the customers who will
 manage the IoT device with.
-The customer's website is general for everyone but the content will change according to the user
-(dynamic website). Any user that is a customer can switch on/off the IoT devices but only the administrator
-add/remove an account or IoT devices (he can give also this permission. The system
-is similar to administrators of Whatsapp groups).
+The customer's website is general for everyone but the content will change according to the user.
+Any user that is a customer can switch on/off the IoT devices but only the customers with privileges
+add/remove an account or IoT devices.
 
 The operators must set up the "virtual house" for the customer: they assign the space on the website,
 create credentials for the customer and can, eventually, add sensors. The operators create an
