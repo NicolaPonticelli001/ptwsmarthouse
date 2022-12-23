@@ -1,0 +1,57 @@
+-- DATABASE SQL --
+
+-- LEGEND --
+PK: Primary Key (logically not null and unique)
+FK: Foreign Key
+NN: Not Null
+N: Null
+U: unique
+S: string
+N: number
+B: bool
+
+
+-- TABLES --
+Permission
+	[PK, S] name: is a string attribute which describe the name of the user's permission
+
+CustomerHasPermission
+By default all the record of "Permission" table are presents inside this table for every
+customer. So if the total customers are 3 (the number of records inside "Customer")
+and the total permission are 2 (the number of record inside "Permission"), the records
+inside this table will be 3*2=6.
+	[PK, FK, S] permissionName: is the Foreign Key that references to "Permission" table
+	[PK, FK, S] customerEmail: is the Foreign Key that references to "Customer" table
+	[NN, B] isGranted: refers to the actual state of the user's permission. If the user
+		has an active permission than the value is 1, otherwise is 0
+
+Customer
+	[PK, S] email: is a Primary Key that refers to the real email address of the customer
+	[NN, S] password: is the cyphred password (with salt)
+	[NN, U, S] telephone: is the customer's telephone number
+
+House
+	[PK, N] idHouse: is a unique identifier of each house
+	[NN, S] friendlyName: is the name displayed on the website
+	[NN, S] address
+	[NN, N] number
+	[NN, S] zipCode
+	[NN, S] city
+	[NN, S] district
+
+Apartment
+	[PK, FK, S] idHouse: is the Foreign Key that references to the id of "House" table
+	[NN, N] intern: is the intern number of the apartment
+	[NN; N] floor: is the floor number where the apartment is located (0 is ground)
+
+CustomerHasHouse
+	[PK, FK, S] customerEmail: is the Foreign Key that references to the email of the customer
+	[PK, FK, N] idHouse: is the Foreign Key that references to the id of the single
+		house inside "House" table
+
+IotDevice
+	[PK, N] deviceCode: is the unique code that identifies every IoT device
+	[NN, S] friendlyName: is the name displayed on the website
+	[FK, NN, S] idHouse: is the Foreign Key that references to the id of the single
+		house inside "House" table
+	[NN, S] type: is the type of the device (switch, plug etc.)

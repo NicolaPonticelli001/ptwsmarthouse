@@ -1,16 +1,10 @@
-There are two subdomain:
-- management.ptwsmarthous.it: this is the subdomain reserved for the operators that will
-manage the customers account;
-- customer.ptwsmarthouse.it: this is the subdomain reserved for the customers who will
-manage the IoT device with.
-The customer's website is general for everyone but the content will change according to the user.
-Any user that is a customer can switch on/off the IoT devices but only the customers with privileges
-add/remove an account or IoT devices.
+The project refers to custom IoT devices than can be controlled from a website. In order to controll them is needed
+an account on the website in order to create a virtual space where adding all the IoT devices. 
+The customer's website is the same for everyone but the content will change according to the user logged in.
+Any user can use the IoT devices but only the customers with right privileges can manage accounts or IoT devices.
 
-The operators must set up the "virtual house" for the customer: they assign the space on the website,
-create credentials for the customer and can, eventually, add sensors. The operators create an
-automatically-generated password which the customer must change after logging the first time.
-The operators can also delete a "virtual house", delete/add/modify customer's account and delete/add/modify IoT devices.
+The first user must register to the platform in order to create a "virtual house" and has all permissions.
+The permission are: manage accounts (invite, remove), give permissions, manage IoT devices (add, remove and modify).
 
 FUTURE IMPLEMENTATIONS
 - Option in login phase to register the device as trusted (2FA needed)
@@ -23,3 +17,4 @@ FUTURE IMPLEMENTATIONS
 - API in order to make a custom IoT device interact with the server
 - Manage more houses with the same account
 - Trusted devices: list of trusted devices (remove or block IP) and list of active sessions (remove)
+- Alexa echo integration
