@@ -33,6 +33,7 @@ Customer
 House
 	[PK, N] idHouse: is a unique identifier of each house
 	[NN, S] friendlyName: is the name displayed on the website
+	[NN, S] region
 	[NN, S] address
 	[NN, N] number
 	[NN, S] zipCode
