@@ -9,7 +9,7 @@ The customer without permission can:
 - change password (from "account" section)
 - interact with IoT devices
 	- switch on/off
-	- set schedule or timer (schedule is set on the server or on the IoT device)
+	- set schedule or timer (schedule is set on the server or the IoT device)
 	- check connection
 
 The privileges are:
