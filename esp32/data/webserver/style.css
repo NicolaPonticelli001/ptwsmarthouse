@@ -1,0 +1,209 @@
+html {
+  margin: 0;
+  padding: 0px 10px;
+  font-family: Arial;
+}
+
+body {
+  min-width: 300px;
+}
+
+* {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important;
+  -webkit-focus-ring-color: rgba(255, 255, 255, 0) !important;
+  outline: none !important;
+}
+
+:root {
+  --primary: #0d6efd;
+  --primary-hover: #0149b4;
+  --primary-active: #013c92;
+}
+
+h1 {
+  color: var(--primary);
+}
+
+.w-100 { width: 100%; }
+.w-90 { width: 90%; }
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.v-container, .input-container, .form-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.h-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 3.5fr 1fr;
+  grid-auto-rows: 1fr;
+}
+
+.grid-container:hover {
+  cursor: pointer;
+}
+
+.col {
+  padding: 15px 5px;
+  word-wrap: break-word;
+  justify-content: space-around;
+  text-align: center;
+  min-width: 0;
+  place-self: stretch;
+}
+
+.ssid-name {
+  width: 1fr;
+  height: 1fr;
+}
+
+.primary-btn {
+  padding: 15px 10px;
+  background-color: var(--primary);
+  border-width: 0px;
+  border-radius: 10px;
+  color: white;
+}
+.primary-btn:hover {
+  background-color: var(--primary-hover);
+  color: white;
+  cursor: pointer;
+}
+.primary-btn:active {
+  background-color: var(--primary-active);
+}
+
+.secondary-btn {
+  padding: 5px 15px;
+  background-color: white;
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  color: var(--primary);
+}
+.secondary-btn:hover {
+  background-color: var(--primary);
+  color: white;
+  cursor: pointer;
+}
+.secondary-btn:active {
+  background-color: var(--primary-active);
+  border-color: var(--primary-active);
+}
+
+.hide {
+  display: none;
+}
+
+.textbox {
+  padding: 5px;
+  border-radius: 5px 0px 0px 5px;
+  border: 2px solid grey;
+}
+.textbox:focus {
+  border-color: black;
+}
+
+.delete-btn {
+  color: grey;
+  padding: 10px 15px;
+  background-color: white;
+  border: 2px solid grey;
+  border-width: 2px 2px 2px 0;
+  border-radius: 0 5px 5px 0;
+}
+.delete-btn:hover {
+  background-color: lightgrey;
+  color: black;
+  cursor: pointer;
+}
+.delete-btn:active {
+  background-color: grey;
+  color: white;
+}
+
+.info-container:hover {
+  background-color: lightgrey;
+  cursor: pointer;
+}
+.info-container:active {
+  background-color: grey;
+  color: white;
+}
+
+.separator {
+  height: 2px;
+  background-color: black;
+  border: 0;
+}
+
+/* -------------------------------- */
+/* SINGLE PROPERTIES */
+
+.grow-0 { flex-grow: 0; }
+.grow-1 { flex-grow: 1; }
+.grow-2 { flex-grow: 2; }
+.grow-3 { flex-grow: 3; }
+.grow-4 { flex-grow: 4; }
+.grow-5 { flex-grow: 5; }
+.grow-6 { flex-grow: 6; }
+.grow-7 { flex-grow: 7; }
+.grow-8 { flex-grow: 8; }
+
+.shrink-0 { flex-shrink: 0; }
+.shrink-1 { flex-shrink: 1; }
+.shrink-2 { flex-shrink: 2; }
+.shrink-3 { flex-shrink: 3; }
+.shrink-4 { flex-shrink: 4; }
+.shrink-5 { flex-shrink: 5; }
+.shrink-6 { flex-shrink: 6; }
+.shrink-7 { flex-shrink: 7; }
+.shrink-8 { flex-shrink: 8; }
+
+
+/* margin */
+.m-5 { margin: 5px; }
+.m-10 { margin: 10px; }
+.m-15 { margin: 15px; }
+.m-20 { margin: 20px; }
+
+.mh-5 { margin-left: 5px; margin-right: 5px; }
+.mh-10 { margin-left: 10px; margin-right: 10px; }
+.mh-15 { margin-left: 15px; margin-right: 15px; }
+.mh-20 { margin-left: 20px; margin-right: 20px; }
+
+.mv-5 { margin-top: 5px; margin-bottom: 5px; }
+.mv-10 { margin-top: 10px; margin-bottom: 10px; }
+.mv-15 { margin-top: 15px; margin-bottom: 15px; }
+.mv-20 { margin-top: 20px; margin-bottom: 20px; }
+
+.mt-5 { margin-top: 5px; }
+.mt-10 { margin-top: 10px; }
+.mt-15 { margin-top: 15px; }
+.mt-20 { margin-top: 20px; }
+
+.mb-5 { margin-bottom: 5px; }
+.mb-10 { margin-bottom: 10px; }
+.mb-15 { margin-bottom: 15px; }
+.mb-20 { margin-bottom: 20px; }
+
+.mr-5 { margin-right: 5px; }
+.mr-10 { margin-right: 10px; }
+.mr-15 { margin-right: 15px; }
+.mr-20 { margin-right: 20px; }
+
+.ml-5 { margin-left: 5px; }
+.ml-10 { margin-left: 10px; }
+.ml-15 { margin-left: 15px; }
+.ml-20 { margin-left: 20px; }
