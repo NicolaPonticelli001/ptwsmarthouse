@@ -6,17 +6,23 @@
 
 AsyncWebServer server(80);
 
-const char* ssid = "esp32-access-point";
-const char* password = "12345678";
+//AP credentials
+const char* APssid = "esp32-access-point";
+const char* APpassword = "12345678";
+
+//Station Wifi network credentials. Get these ones from config.txt
+char* STssid;
+char* STpassword;
 
 unsigned long int startMillis = 0;
 const unsigned long delayValue = 3000;
 
+bool scanWifiNetworks = false;
+
 void setup() {
   Serial.begin(115200);
   WiFi.mode(WIFI_AP_STA);
-  WiFi.disconnect();
-  WiFi.softAP(ssid, password);
+  WiFi.softAP(APssid, APpassword);
   Serial.println();
   Serial.print("IP Address: ");
   Serial.println(WiFi.softAPIP());
@@ -37,35 +43,37 @@ void setup() {
   server.on("/script.js", HTTP_ANY, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/webserver/script.js");
   });
+
+  server.on("/networkscan", HTTP_POST, [](AsyncWebServerRequest * request) {
+    String jsonStr = "{";
+    int n = WiFi.scanComplete();
+    Serial.println(n);
+    if (n == -2) WiFi.scanNetworks(true);
+    else {
+      if (n != 0) {
+        for (int i = 0; i<n; i++) {
+          jsonStr += "\"number\":" + String(i);
+          jsonStr += ",\"values\":{";
+          jsonStr += "\"ssid\":" + String(WiFi.SSID(i));
+          jsonStr += ",\"rssi\":" + String(WiFi.RSSI(i));
+          jsonStr += ",\"auth\"" + String(WiFi.encryptionType(i));
+          jsonStr += "}";
+        }
+      }
+      WiFi.scanDelete();
+        if(WiFi.scanComplete() == -2){
+          WiFi.scanNetworks(true);
+        }
+      jsonStr += "}";
+      request -> send(200, "application/json", jsonStr);
+      jsonStr = "";
+    }
+  });
   
   server.begin();
   startMillis = millis();
 }
 
 void loop() {
-  if (startMillis - millis() >= delayValue) {
-    int n = WiFi.scanNetworks();
-    Serial.println("scan done");
-    if (n == 0) {
-        Serial.println("no networks found");
-    } else {
-      Serial.print(n);
-      Serial.println(" networks found");
-      for (int i = 0; i < n; ++i) {
-        // Print SSID and RSSI for each network found
-        Serial.print(i + 1);
-        Serial.print(": ");
-        Serial.print(WiFi.SSID(i));
-        Serial.print(" (");
-        Serial.print(WiFi.RSSI(i));
-        Serial.print(")");
-        Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?" ":"*");
-      }
-    }
-    Serial.print("Elapsed: ");
-    Serial.println(startMillis - millis());
-    Serial.println("");
-
-    startMillis = millis();
-  }
+  
 }
