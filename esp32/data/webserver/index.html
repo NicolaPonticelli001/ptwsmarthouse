@@ -7,11 +7,11 @@
   <link rel="stylesheet" type="text/css" href="style.css">
   <script type="text/javascript" src="script.js"></script>
 </head>
-<body onload="onBodyLoad()">
+<body>
 
-  <div class="h-container" style="justify-content: space-evenly; align-items: center;">
-    <h1 class="">Select network</h1>
-    <span><button class="secondary-btn" type="button" name="add-network" style="font-size: 2rem;">+</button></span>
+  <div class="h-container" style="justify-content: center; align-items: center; gap: 30px">
+    <h1>Select network</h1>
+    <span><button id="manualConnectionBtn" class="secondary-btn" type="button" name="add-network" style="font-size: 2rem;">+</button></span>
   </div>
 
   <div id="network-list-container">
@@ -21,47 +21,64 @@
   <p id="log"></p>
 
   <template id="network-list-template">
-    <div class="v-container w-100 center">
-      <form class="v-container w-100 center" action="index.html" method="post">
-        <div data-completeId id="infoBox" class="info-container grid-container mb-5" onclick="showPasswordBox(this.id)">
+    <div class="v-container w-90 center">
+      <form action="connectToNetwork" method="post">
+        <div class="v-container w-100 center">
+        <div data-completeId id="infoBox" class="info-container grid-container mb-5">
           <div data-parseData id="rssi" class="col v-container"></div>
           <div data-parseData id="ssid" class="col v-container"></div>
           <div data-parseData id="auth" class="col v-container"></div>
         </div>
+
         <div data-completeId id="passwordBox" class="hide passwordBox v-container w-100 mb-5">
           <div class="h-container w-100 center">
-            <input data-completeId id="password" type="text" name="password" placeholder="password" class="addId textbox grow-1">
-            <input data-completeId id="delete" type="button" class="delete-btn" value="X" onclick="deleteInput(this.id)">
+            <input data-completeId id="password" type="text" name="password" placeholder="password" class="textbox grow-1">
+            <input data-completeId id="delete" type="button" class="delete-btn" value="X">
           </div>
           <input type="hidden" name="ssid" value="">
           <input type="submit" name="submit" value="connect" class="primary-btn mv-5">
         </div>
+</div>
       </form>
-
     </div>
   </template>
+
 
   <template id="separator-template">
     <div class="separator mv-5"></div>
   </template>
-  <!--
-  <form action="index.html" method="post" class="v-container w-100 center">
 
-  <div class="input-container">
-  <label for="ssid">Network SSID</label>
-  <input type="text" name="ssid" placeholder="WiFi Network name"></input>
-</div>
 
-<div class="input-container">
-<label for="password">Network Password</label>
-<input type="text" name="password" placeholder="password"></input>
-</div>
+  <div id="credentials-fixed-container" class="hide">
+    <div id="credentials-absolute-container">
 
-<div class="form-buttons">
-<input type="submit" value="submit"></input>
-</div>
+      <form action="connectToNetwork" method="post">
+        <div id="credentials-container" class="v-container w-100 center rw-g-20">
+          <div>
+            <label for="ssid">Network SSID</label>
+            <div class="input-container h-container w-100 center mt-10">
+              <input id="manualSsid" class="textbox grow-1" type="text" name="ssid" placeholder="Network name"></input>
+              <input class="delete-btn" type="button" value="X">
+            </div>
+          </div>
 
-</form>
--->
+          <div>
+            <label for="password">Network Password</label>
+            <div class="input-container h-container w-100 center mt-10">
+              <input id="manualPassword" class="textbox grow-1" type="text" name="password" placeholder="password"></input>
+              <input class="delete-btn" type="button" value="X">
+            </div>
+          </div>
+
+          <div class="form-buttons">
+            <input class="primary-btn mv-5" type="submit" value="submit"></input>
+            <input class="secondary-btn mv-5" type="button" value="Go back" onclick="showManualConnection()"></input>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
 </body>
 </html>
