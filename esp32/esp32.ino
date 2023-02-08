@@ -47,27 +47,28 @@ void setup() {
   server.on("/networkscan", HTTP_POST, [](AsyncWebServerRequest * request) {
     String jsonStr = "{";
     int n = WiFi.scanComplete();
-    Serial.println(n);
-    if (n == -2) WiFi.scanNetworks(true);
-    else {
-      if (n != 0) {
+    if (n == -2) {
+      WiFi.scanNetworks(true);
+    } else {
+      if (n > 0) {
+        jsonStr += "\"total\":" + String(n);
         for (int i = 0; i<n; i++) {
-          jsonStr += "\"number\":" + String(i);
-          jsonStr += ",\"values\":{";
-          jsonStr += "\"ssid\":" + String(WiFi.SSID(i));
+          jsonStr += ",\"" + String(i) + "\":{";
+          jsonStr += "\"ssid\":\"" + String(WiFi.SSID(i)) + "\"";
           jsonStr += ",\"rssi\":" + String(WiFi.RSSI(i));
-          jsonStr += ",\"auth\"" + String(WiFi.encryptionType(i));
+          jsonStr += ",\"auth\":" + String(WiFi.encryptionType(i));
           jsonStr += "}";
         }
       }
       WiFi.scanDelete();
-        if(WiFi.scanComplete() == -2){
-          WiFi.scanNetworks(true);
-        }
+      if(WiFi.scanComplete() == -2){
+        WiFi.scanNetworks(true);
+      }
       jsonStr += "}";
       request -> send(200, "application/json", jsonStr);
       jsonStr = "";
     }
+    Serial.println(n);
   });
   
   server.begin();
