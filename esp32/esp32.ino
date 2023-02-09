@@ -33,7 +33,7 @@ void setup() {
   }
 
   server.on("/", HTTP_ANY, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/webserver/index.html");
+    request->send(SPIFFS, "/webserver/network.html");
   });
 
   server.on("/style.css", HTTP_ANY, [](AsyncWebServerRequest *request){
@@ -44,6 +44,7 @@ void setup() {
     request->send(SPIFFS, "/webserver/script.js");
   });
 
+  //Get the list of wifi networks
   server.on("/networkscan", HTTP_POST, [](AsyncWebServerRequest * request) {
     String jsonStr = "{";
     int n = WiFi.scanComplete();
@@ -69,6 +70,16 @@ void setup() {
       jsonStr = "";
     }
     Serial.println(n);
+  });
+
+  //Take the given ssid and password, then connect to wifi network.
+  //If the credentials are valid then the user will be redirected to the second step, otherwise
+  //he will be redirected to the network scan page with given Get parameters to show the error
+  server.on("/connectToNetwork", HTTP_POST, [](AsyncWebServerRequest *request){
+    //There will be two types of parameters: ssid-list and password-list or ssid-manual and password-manual.
+    //In order to send the error to the user we must check which types of data have been sent
+    
+    request->send(SPIFFS, "/webserver/script.js");
   });
   
   server.begin();

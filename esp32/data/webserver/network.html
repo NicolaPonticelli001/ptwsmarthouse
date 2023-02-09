@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1 - Network</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+  <nav class="mv-20">
+    <div class="h-container flex-center cl-g-5">
+      <div class="step-container active">1</div>
+      <div class="step-separator"></div>
+      <div class="step-container">2</div>
+      <div class="step-separator"></div>
+      <div class="step-container">3</div>
+    </div>
+
+    <div class="h-container flex-center cl-g-20">
+      <h1 class="title">Select network</h1>
+      <span><button id="manualConnectionBtn" class="secondary-btn" type="button" name="add-network" style="font-size: 2rem;">+</button></span>
+    </div>
+  </nav>
+
+  <div id="network-list-container">
+
+  </div>
+
+  <p id="log"></p>
+
+  <div id="credentials-fixed-container" class="hide">
+    <div id="credentials-absolute-container">
+      <form action="connectToNetwork" method="post">
+        <div id="credentials-container" class="v-container w-100 center rw-g-20">
+          <div>
+            <label for="ssid" class="subtitle c-primary">Network SSID</label>
+            <div class="input-container h-container w-100 center mt-10">
+              <input id="manualSsid" class="textbox grow-1" type="text" name="ssid-manual" placeholder="Network name"></input>
+              <input class="delete-btn" type="button" value="X">
+            </div>
+          </div>
+
+          <div>
+            <label for="password" class="subtitle c-primary">Network Password</label>
+            <div class="input-container h-container w-100 center mt-10">
+              <input id="manualPassword" class="textbox grow-1" type="text" name="password-manual" placeholder="password"></input>
+              <input class="delete-btn" type="button" value="X">
+            </div>
+          </div>
+
+          <div class="form-buttons">
+            <input class="primary-btn mv-5" type="submit" value="submit"></input>
+            <input class="secondary-btn mv-5" type="button" value="Go back" onclick="showManualConnection()"></input>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <template id="network-list-template">
+    <div class="v-container w-90 center">
+      <form action="connectToNetwork" method="post">
+        <div class="v-container w-100 center">
+          <div data-completeId id="infoBox" class="info-container grid-container mb-5">
+            <div data-parseData id="rssi" class="col v-container"></div>
+            <div data-parseData id="ssid" class="col v-container"></div>
+            <div data-parseData id="auth" class="col v-container"></div>
+          </div>
+
+          <div data-completeId id="passwordBox" class="hide passwordBox v-container w-100 mb-5">
+            <div class="h-container w-100 center">
+              <input data-completeId id="password" type="text" name="password-list" placeholder="password" class="textbox grow-1">
+              <input data-completeId id="delete" type="button" class="delete-btn" value="X">
+            </div>
+            <input type="hidden" name="ssid-list" value="">
+            <input type="submit" name="submit" value="connect" class="primary-btn mv-5">
+          </div>
+        </div>
+      </form>
+    </div>
+  </template>
+
+
+  <template id="separator-template">
+    <div class="separator mv-5"></div>
+  </template>
+
+</body>
+</html>
