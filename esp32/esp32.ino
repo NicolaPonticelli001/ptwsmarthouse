@@ -5,14 +5,21 @@
 #include <SPIFFS.h>
 
 AsyncWebServer server(80);
+String jsonStr = "{}";
 
 //AP credentials
 const char* APssid = "esp32-access-point";
 const char* APpassword = "12345678";
 
 //Station Wifi network credentials. Get these ones from config.txt
-char* STssid;
-char* STpassword;
+String STssid = "";
+String STpassword = "";
+
+int wifiScan = 0;
+bool startWifiScan = false;
+int statusWifiNumber = 0;
+bool connectWifi = false;
+bool hasWifiConnectionStart = false;
 
 unsigned long int startMillis = 0;
 const unsigned long delayValue = 3000;
@@ -31,10 +38,14 @@ void setup() {
   }
 
   server.on("/", HTTP_ANY, [](AsyncWebServerRequest *request){
+    if (WiFi.status() == 3) {
+      request -> redirect("/credentials");
+    }
     request->send(SPIFFS, "/webserver/network.html");
   });
   server.on("/credentials", HTTP_ANY, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/webserver/credentials.html");
+    if (WiFi.status() == 3) request->send(SPIFFS, "/webserver/credentials.html");
+    else request->redirect("/");
   });
   server.on("/house", HTTP_ANY, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/webserver/house.html");
@@ -56,55 +67,92 @@ void setup() {
 
   //Get the list of wifi networks
   server.on("/networkscan", HTTP_POST, [](AsyncWebServerRequest *request){
-    String jsonStr = "{";
-    int n = WiFi.scanComplete();
-    if (n == -2) WiFi.scanNetworks(true);
-    else {
-      if (n > 0) {
-        jsonStr += "\"total\":" + String(n);
-        for (int i = 0; i<n; i++) {
-          jsonStr += ",\"" + String(i) + "\":{";
-          jsonStr += "\"ssid\":\"" + String(WiFi.SSID(i)) + "\"";
-          jsonStr += ",\"rssi\":" + String(WiFi.RSSI(i));
-          jsonStr += ",\"auth\":" + String(WiFi.encryptionType(i));
-          jsonStr += "}";
-        }
-      }
-      WiFi.scanDelete();
-      if(WiFi.scanComplete() == -2) WiFi.scanNetworks(true);
-    }
-    jsonStr += "}";
-    Serial.println(jsonStr);
-    Serial.println(n);
+    /*Serial.print("Before send: ");
+    Serial.println(jsonStr);*/
     request->send(200, "application/json", jsonStr);
-    jsonStr = String();
+    startWifiScan = true;
   });
 
   //Take the given ssid and password, then connect to wifi network.
   //If the credentials are valid then the user will be redirected to the second step, otherwise
   //he will be redirected to the network scan page with given Get parameters to show the error
   server.on("/connectToNetwork", HTTP_POST, [](AsyncWebServerRequest *request){
-    //There will be two types of parameters: ssid-list and password-list or ssid-manual and password-manual.
-    //In order to send the error to the user we must check which types of data have been sent
-    //request->redirect("/login");
-    
-    int params = request->params();
-    for(int i = 0; i < params; i++){
-      AsyncWebParameter* p = request -> getParam(i);
-      if (p -> isFile()){ //p->isPost() is also true
-        Serial.printf("FILE[%s]: %s, size: %u\n", p -> name().c_str(), p -> value().c_str(), p -> size());
-      } else if (p -> isPost()){
-        Serial.printf("POST[%s]: %s\n", p -> name().c_str(), p -> value().c_str());
-      } else {
-        Serial.printf("GET[%s]: %s\n", p -> name().c_str(), p -> value().c_str());
-      }
+    String statusWifiStr = "";
+    STssid = request->arg("ssid");
+    STpassword = request->arg("password");
+    Serial.println("Request");
+    Serial.println(STssid);
+    Serial.println(STpassword);
+    switch (statusWifiNumber) {
+      case 0:                               //WL_IDLE_STATUS
+        statusWifiStr = "progress";
+        break;
+      case 6:                               //WL_DISCONNECTED
+        statusWifiStr = "progress";
+        break;
+      case 1:
+        statusWifiStr = "network not found";
+        break;
+      case 3:                               //WL_CONNECTED
+        statusWifiStr = "success";
+        break;
+      case 4:                               //WL_CONNECT_FAILED
+        statusWifiStr = "fail";
+        break;
+      default:
+        statusWifiStr = String(statusWifiNumber);
+        break;
     }
-    request->redirect("/credentials");
+
+    request->send(200, "text/plain", statusWifiStr);
+    if (!hasWifiConnectionStart) connectWifi = true;
+    if (hasWifiConnectionStart && (statusWifiNumber != 6 && statusWifiNumber !=0)) {
+      statusWifiNumber = 0;
+      hasWifiConnectionStart = false;
+    }
+  });
+
+  server.on("/backToNetworkScan", HTTP_GET, [](AsyncWebServerRequest *request){
+    WiFi.disconnect();
+    request -> redirect("/");
+  });
+
+  server.on("/accountCredentials", HTTP_POST, [](AsyncWebServerRequest *request){
+    
+    request -> send(200, "text/plain", "risposta test");
   });
   
   server.begin();
+  startMillis = millis();
 }
 
 void loop() {
-  
+  if (startWifiScan) {
+      wifiScan = WiFi.scanNetworks();
+      jsonStr = "{";
+      jsonStr += "\"total\":" + String(wifiScan);
+      for (int i = 0; i < wifiScan; i++) {
+        jsonStr += ",\"" + String(i) + "\":{";
+        jsonStr += "\"ssid\":\"" + String(WiFi.SSID(i)) + "\"";
+        jsonStr += ",\"rssi\":" + String(WiFi.RSSI(i));
+        jsonStr += ",\"auth\":" + String(WiFi.encryptionType(i));
+        jsonStr += "}";
+      }
+      jsonStr += "}";
+      startMillis = millis();
+      startWifiScan = false;
+    }
+
+  if (connectWifi) {
+    hasWifiConnectionStart = true;
+    statusWifiNumber = WiFi.begin(STssid.c_str(), STpassword.c_str());
+    connectWifi = false;
+  }
+
+  if (hasWifiConnectionStart && (statusWifiNumber == 0 || statusWifiNumber == 6)) {
+    if (millis() - startMillis >= delayValue) {
+      statusWifiNumber = WiFi.status();
+      //Serial.println(statusWifiNumber);
+    }
+  }
 }

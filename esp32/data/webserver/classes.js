@@ -30,8 +30,8 @@ class NetworkElement extends TemplateElement {
   #elements_complete_id
   #network_number
   #delete_buttons
-  #hidden_input_ssid
   #info_box
+  #form_element
 
   constructor(elementTemplate, elementContainer, networkNumber) {
     super(elementTemplate, elementContainer)
@@ -39,8 +39,8 @@ class NetworkElement extends TemplateElement {
     this.elements_complete_id = super.getTemplateClonedContent().querySelectorAll("[data-completeId]")
     this.elements_parse_data = super.getTemplateClonedContent().querySelectorAll("[data-parseData]")
     this.delete_buttons = super.getTemplateClonedContent().querySelectorAll(".delete-btn")
-    this.hidden_input_ssid = super.getTemplateClonedContent().querySelector('input[name="ssid-list"]')
     this.info_box = super.getTemplateClonedContent().querySelector("#infoBox")
+    this.form_element = super.getTemplateClonedContent().querySelector("form")
   }
 
   attachSingleJsonObj(jsonObj) {
@@ -56,13 +56,11 @@ class NetworkElement extends TemplateElement {
       actualElement.removeAttribute("data-completeId")
     }
 
-    this.hidden_input_ssid.setAttribute("value", jsonObj["ssid"])
-
     for (let button of this.delete_buttons) button.addEventListener("click", function(e) { deleteInput(e.target || e.srcElement) })
-
     super.appendTemplate()
   }
 
+  getFormElement() { return this.form_element }
   getNetworkNumber() { return this.network_number }
 
 }
