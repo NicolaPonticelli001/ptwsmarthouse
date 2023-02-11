@@ -17,8 +17,6 @@ char* STpassword;
 unsigned long int startMillis = 0;
 const unsigned long delayValue = 3000;
 
-bool scanWifiNetworks = false;
-
 void setup() {
   Serial.begin(115200);
   WiFi.mode(WIFI_AP_STA);
@@ -35,6 +33,12 @@ void setup() {
   server.on("/", HTTP_ANY, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/webserver/network.html");
   });
+  server.on("/credentials", HTTP_ANY, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/webserver/credentials.html");
+  });
+  server.on("/house", HTTP_ANY, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/webserver/house.html");
+  });
 
   server.on("/style.css", HTTP_ANY, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/webserver/style.css");
@@ -43,14 +47,19 @@ void setup() {
   server.on("/script.js", HTTP_ANY, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/webserver/script.js");
   });
+  server.on("/classes.js", HTTP_ANY, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/webserver/classes.js");
+  });
+  server.on("/network.js", HTTP_ANY, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/webserver/network.js");
+  });
 
   //Get the list of wifi networks
-  server.on("/networkscan", HTTP_POST, [](AsyncWebServerRequest * request) {
+  server.on("/networkscan", HTTP_POST, [](AsyncWebServerRequest *request){
     String jsonStr = "{";
     int n = WiFi.scanComplete();
-    if (n == -2) {
-      WiFi.scanNetworks(true);
-    } else {
+    if (n == -2) WiFi.scanNetworks(true);
+    else {
       if (n > 0) {
         jsonStr += "\"total\":" + String(n);
         for (int i = 0; i<n; i++) {
@@ -62,14 +71,13 @@ void setup() {
         }
       }
       WiFi.scanDelete();
-      if(WiFi.scanComplete() == -2){
-        WiFi.scanNetworks(true);
-      }
-      jsonStr += "}";
-      request -> send(200, "application/json", jsonStr);
-      jsonStr = "";
+      if(WiFi.scanComplete() == -2) WiFi.scanNetworks(true);
     }
+    jsonStr += "}";
+    Serial.println(jsonStr);
     Serial.println(n);
+    request->send(200, "application/json", jsonStr);
+    jsonStr = String();
   });
 
   //Take the given ssid and password, then connect to wifi network.
@@ -78,12 +86,23 @@ void setup() {
   server.on("/connectToNetwork", HTTP_POST, [](AsyncWebServerRequest *request){
     //There will be two types of parameters: ssid-list and password-list or ssid-manual and password-manual.
     //In order to send the error to the user we must check which types of data have been sent
+    //request->redirect("/login");
     
-    request->send(SPIFFS, "/webserver/script.js");
+    int params = request->params();
+    for(int i = 0; i < params; i++){
+      AsyncWebParameter* p = request -> getParam(i);
+      if (p -> isFile()){ //p->isPost() is also true
+        Serial.printf("FILE[%s]: %s, size: %u\n", p -> name().c_str(), p -> value().c_str(), p -> size());
+      } else if (p -> isPost()){
+        Serial.printf("POST[%s]: %s\n", p -> name().c_str(), p -> value().c_str());
+      } else {
+        Serial.printf("GET[%s]: %s\n", p -> name().c_str(), p -> value().c_str());
+      }
+    }
+    request->redirect("/credentials");
   });
   
   server.begin();
-  startMillis = millis();
 }
 
 void loop() {

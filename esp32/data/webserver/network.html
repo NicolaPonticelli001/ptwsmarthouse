@@ -3,9 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>1 - Network</title>
   <link rel="stylesheet" type="text/css" href="style.css">
-  <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
   <nav class="mv-20">
@@ -37,7 +39,7 @@
             <label for="ssid" class="subtitle c-primary">Network SSID</label>
             <div class="input-container h-container w-100 center mt-10">
               <input id="manualSsid" class="textbox grow-1" type="text" name="ssid-manual" placeholder="Network name"></input>
-              <input class="delete-btn" type="button" value="X">
+              <input class="delete-btn thirdary-btn" type="button" value="X">
             </div>
           </div>
 
@@ -45,13 +47,13 @@
             <label for="password" class="subtitle c-primary">Network Password</label>
             <div class="input-container h-container w-100 center mt-10">
               <input id="manualPassword" class="textbox grow-1" type="text" name="password-manual" placeholder="password"></input>
-              <input class="delete-btn" type="button" value="X">
+              <input class="delete-btn thirdary-btn" type="button" value="X">
             </div>
           </div>
 
           <div class="form-buttons">
             <input class="primary-btn mv-5" type="submit" value="submit"></input>
-            <input class="secondary-btn mv-5" type="button" value="Go back" onclick="showManualConnection()"></input>
+            <input class="secondary-btn mv-5" type="button" value="Close" onclick="showManualConnection()"></input>
           </div>
         </div>
       </form>
@@ -59,20 +61,20 @@
   </div>
 
 
-  <template id="network-list-template">
+  <template id="network-template">
     <div class="v-container w-90 center">
       <form action="connectToNetwork" method="post">
         <div class="v-container w-100 center">
           <div data-completeId id="infoBox" class="info-container grid-container mb-5">
-            <div data-parseData id="rssi" class="col v-container"></div>
-            <div data-parseData id="ssid" class="col v-container"></div>
-            <div data-parseData id="auth" class="col v-container"></div>
+            <div data-parseData="rssi" class="col v-container"></div>
+            <div data-parseData="ssid" data-completeId id="ssid" class="col v-container"></div>
+            <div data-parseData="auth" class="col v-container"></div>
           </div>
 
           <div data-completeId id="passwordBox" class="hide passwordBox v-container w-100 mb-5">
             <div class="h-container w-100 center">
               <input data-completeId id="password" type="text" name="password-list" placeholder="password" class="textbox grow-1">
-              <input data-completeId id="delete" type="button" class="delete-btn" value="X">
+              <input type="button" class="delete-btn thirdary-btn" value="X">
             </div>
             <input type="hidden" name="ssid-list" value="">
             <input type="submit" name="submit" value="connect" class="primary-btn mv-5">
@@ -87,5 +89,9 @@
     <div class="separator mv-5"></div>
   </template>
 
+
+  <script type="text/javascript" src="script.js"></script>
+  <script type="text/javascript" src="classes.js"></script>
+  <script type="text/javascript" src="network.js"></script>
 </body>
 </html>

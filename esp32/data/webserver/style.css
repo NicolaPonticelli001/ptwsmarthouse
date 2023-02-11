@@ -18,12 +18,16 @@ body {
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important;
   -webkit-focus-ring-color: rgba(255, 255, 255, 0) !important;
   outline: none !important;
+  font-size: 1rem;
 }
 
 :root {
   --primary: #0d6efd;
   --primary-hover: #0149b4;
   --primary-active: #013c92;
+  --secondary: #808080;
+  --secondary-hover: #676767;
+  --secondary-active: #4d4d4d;
 }
 
 h1 {
@@ -72,27 +76,37 @@ h1 {
 }
 
 .primary-btn {
-  padding: 15px 10px;
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  padding: 1rem;
   background-color: var(--primary);
-  border-width: 0px;
-  border-radius: 10px;
+  border: 2px solid var(--primary);
+  border-radius: 0.5rem;
   color: white;
+  font-size: 1rem;
 }
 .primary-btn:hover {
   background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
   color: white;
   cursor: pointer;
 }
 .primary-btn:active {
   background-color: var(--primary-active);
+  border-color: var(--primary-active);
 }
 
 .secondary-btn {
-  padding: 5px 15px;
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  padding: 1rem;
   background-color: white;
   border: 2px solid var(--primary);
-  border-radius: 10px;
+  border-radius: 0.5rem;
   color: var(--primary);
+  font-size: 1rem;
 }
 .secondary-btn:hover {
   background-color: var(--primary);
@@ -109,29 +123,30 @@ h1 {
 }
 
 .textbox {
-  padding: 5px;
+  padding: 0.5rem;
   border-radius: 5px 0px 0px 5px;
-  border: 2px solid grey;
+  border: 2px solid var(--secondary);
 }
 .textbox:focus {
-  border-color: black;
+  border-color: var(--primary);
 }
 
-.delete-btn {
-  color: grey;
-  padding: 10px 15px;
+.thirdary-btn {
+  color: var(--secondary);
+  padding: 1rem;
   background-color: white;
-  border: 2px solid grey;
+  border: 2px solid var(--secondary);
   border-width: 2px 2px 2px 0;
-  border-radius: 0 5px 5px 0;
+  border-radius: 0 0.5rem 0.5rem 0;
 }
-.delete-btn:hover {
-  background-color: lightgrey;
-  color: black;
+.thirdary-btn:hover {
+  background-color: var(--secondary);
+  color: white;
   cursor: pointer;
 }
-.delete-btn:active {
-  background-color: grey;
+.thirdary-btn:active {
+  background-color: var(--secondary-active);
+  border-color: var(--secondary-active);
   color: white;
 }
 
@@ -158,7 +173,7 @@ h1 {
   bottom: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(211, 211, 211, 0.7);
+  background-color: rgba(211, 211, 211, 0.9);
   z-index: 1;
 }
 #credentials-absolute-container {
@@ -178,7 +193,7 @@ h1 {
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: bold;
 }
 
