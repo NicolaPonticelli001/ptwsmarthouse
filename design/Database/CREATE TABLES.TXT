@@ -1,0 +1,67 @@
+CREATE TABLE Customer(
+	email text NOT NULL,
+	password text NOT NULL,
+	telephone text NOT NULL,
+	name text NOT NULL,
+	surname text NOT NULL,
+	
+	PRIMARY KEY(email)
+);
+
+CREATE TABLE Permission(
+	name text PRIMARY KEY
+);
+
+CREATE TABLE House(
+	idHouse integer PRIMARY KEY,
+	name text NOT NULL,
+	state text NOT NULL,
+	region text NOT NULL,
+	district text NOT NULL,
+	city text NOT NULL,
+	zipCode text NOT NULL,
+	address text NOT NULL,
+	number integer NOT NULL
+);
+
+CREATE TABLE CustomerHasHouse(
+	email text NOT NULL UNIQUE,
+	idHouse integer NOT NULL UNIQUE,
+	
+	PRIMARY KEY(email,idHouse),
+	FOREIGN KEY(email) REFERENCES Customer(email),
+	FOREIGN KEY(idHouse) REFERENCES House(idHouse)
+);
+
+CREATE TABLE CustomerHasPermission(
+	permissionName text NOT NULL,
+	customerEmail text NOT NULL,
+	idHouse integer NOT NULL,
+	isGranted boolean NOT NULL,
+	
+	PRIMARY KEY(permissionName,customerEmail,idHouse),
+	FOREIGN KEY (permissionName) REFERENCES Permission(name),
+	FOREIGN KEY (customerEmail) REFERENCES CustomerHasHouse(email),
+	FOREIGN KEY (idHouse) REFERENCES CustomerHasHouse(idHouse)
+);
+
+CREATE TABLE Room(
+	idHouse integer NOT NULL UNIQUE,
+	idRoom integer NOT NULL UNIQUE,
+	name text NOT NULL,
+	
+	PRIMARY KEY(idHouse,idRoom),
+	FOREIGN KEY(idHouse) REFERENCES House(idHouse)
+);
+
+CREATE TABLE IoTDevice(
+	deviceCode integer NOT NULL,
+	idHouse integer NOT NULL,
+	idRoom integer NOT NULL,
+	name text NOT NULL,
+	type text NOT NULL,
+	
+	PRIMARY KEY(deviceCode),
+	FOREIGN KEY(idHouse) REFERENCES Room(idHouse),
+	FOREIGN KEY(idRoom) REFERENCES Room(idRoom)
+);
