@@ -17,7 +17,7 @@
 </head>
 <body>
 
-  <div class="container my-5 border-bottom border-2 border-primary p-0">
+  <div class="container mt-4 border-bottom border-2 border-primary p-0">
     <div class="row align-items-center justify-content-center mb-3">
       <div class="col-auto">
         <img src="../static/images/ptwsmarthouse_logo-512x512.svg" width="60px">
@@ -31,137 +31,88 @@
     </div>
   </div>
 
-  <form id="registerForm" class="container" action="" method="post" novalidate>
-    <div class="mb-3">
-      <label for="emailInput" class="text-primary fs-4 mb-2">Email address</label>
-      <div class="input-group">
-        <input id="emailInput" type="email" data-formid="registerForm" class="form-control fs-5" placeholder="name@example.com" required>
-        <button id="delete-emailInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-        <div id="emailInput-invalid-feedback" class="invalid-feedback"></div>
-        <div class="valid-feedback">Correct!</div>
-      </div>
-    </div>
-
-    <div class="mb-5">
-      <label for="passwordInput" class="text-primary fs-4 mb-2">Password</label>
-      <div class="input-group">
-        <input id="passwordInput" type="password" data-formid="registerForm" class="form-control fs-5" placeholder="example" required>
-        <button type="button" class="btn btn-outline-secondary fs-5" onclick="togglePassword('passwordInput')"><i id="passwordInput-eye" class="bi bi-eye-fill"></i></button>
-        <button id="delete-passwordInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-        <div id="passwordInput-invalid-feedback" class="invalid-feedback"></div>
-        <div class="valid-feedback">Correct!</div>
-      </div>
-    </div>
-
-    <div class="container p-0 mb-4">
-
-      <div class="row">
-        <div class="col-md-9 mb-3">
-          <label for="regionInput" class="text-primary fs-4 mb-2">Region</label>
-          <div class="input-group">
-            <input id="regionInput" type="text" data-formid="registerForm" class="form-control fs-5" placeholder="Milano" required>
-            <button id="delete-regionInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-            <div id="regionInput-invalid-feedback" class="invalid-feedback"></div>
-            <div class="valid-feedback">Correct!</div>
-          </div>
-        </div>
-        <div class="col-md mb-3">
-          <label for="districtInput" class="text-primary fs-4 mb-2">District</label>
-          <div class="input-group">
-            <input id="districtInput" type="text" data-formid="registerForm" class="form-control fs-5" placeholder="MI" maxLength="2" minLength="2"
-            pattern="[a-zA-Z]+" required>
-            <button id="delete-districtInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-            <div id="districtInput-invalid-feedback" class="invalid-feedback"></div>
-            <div class="valid-feedback">Correct!</div>
-          </div>
+  <form id="register-form" class="container" action="" method="post" novalidate>
+    <div class="row mt-5">
+      <div id="name-general-container" class="col mb-3">
+        <label for="name" class="text-primary fs-4 mb-2">Name (*)</label>
+        <div class="input-group">
+          <input id="name" type="text" class="form-control fs-5" name="name" placeholder="eg. Steven" required>
+          <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
+          <div id="name-invalid-feedback" class="invalid-feedback mt-2">Invalid!</div>
+          <div class="valid-feedback mt-2">Correct!</div>
         </div>
       </div>
-
-      <div class="row">
-        <div class="col-md-9 mb-3">
-          <label for="addressInput" class="text-primary fs-4 mb-2">Address</label>
-          <div class="input-group">
-            <input id="addressInput" type="text" data-formid="registerForm" class="form-control fs-5" placeholder="via giacomo leopardi" required>
-            <button id="delete-addressInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-            <div id="addressInput-invalid-feedback" class="invalid-feedback"></div>
-            <div class="valid-feedback">Correct!</div>
-          </div>
-        </div>
-        <div class="col-md mb-3">
-          <label for="numberInput" class="text-primary fs-4 mb-2">Number</label>
-          <div class="input-group">
-            <input id="numberInput" type="number" data-formid="registerForm" class="form-control fs-5 remove-number-arrows" placeholder="123" required>
-            <button id="delete-numberInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-            <div id="numberInput-invalid-feedback" class="invalid-feedback"></div>
-            <div class="valid-feedback">Correct!</div>
-          </div>
+      <div id="surname-general-container" class="col-md mb-3">
+        <label for="surname" class="text-primary fs-4 mb-2">Surname (*)</label>
+        <div class="input-group">
+          <input id="surname" type="text" class="form-control fs-5" name="surname" placeholder="eg. Jhones" required>
+          <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
+          <div id="surname-invalid-feedback" class="invalid-feedback mt-2">Invalid!</div>
+          <div class="valid-feedback mt-2">Correct!</div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-9 mb-3">
-          <label for="cityInput" class="text-primary fs-4 mb-2">City</label>
-          <div class="input-group">
-            <input id="cityInput" type="text" data-formid="registerForm" class="form-control fs-5 remove-number-arrows" placeholder="milano"
-            pattern="[a-zA-Z]+" required>
-            <button id="delete-cityInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-            <div id="cityInput-invalid-feedback" class="invalid-feedback"></div>
-            <div class="valid-feedback">Correct!</div>
-          </div>
-        </div>
-        <div class="col-md mb-3">
-          <div class="row">
-            <div class="col">
-              <label for="zipInput" class="text-primary fs-4 mb-2">ZipCode</label>
-              <div class="input-group">
-                <input id="zipInput" type="text" data-formid="registerForm" class="form-control fs-5" placeholder="08536" maxLength="5" minLength="5"
-                pattern="[0-9]+" required>
-                <button id="delete-zipInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-                <div id="zipInput-invalid-feedback" class="invalid-feedback"></div>
-                <div class="valid-feedback">Correct!</div>
-              </div>
-            </div>
-          </div>
+      <div id="telephone-general-container" class="col-md">
+        <label for="thelephone" class="text-primary fs-4 mb-2">Thelephone (*)</label>
+        <div class="input-group">
+          <input id="thelephone" type="tel" class="form-control fs-5" name="thelephone" placeholder="0123456789" pattern="[0-9]{10,11}" required>
+          <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
+          <div id="thelephone-invalid-feedback" class="invalid-feedback mt-2">Invalid!</div>
+          <div class="valid-feedback mt-2">Correct!</div>
         </div>
       </div>
     </div>
 
-    <a class="d-block link link-secondary p-0 mb-2 fs-3" onclick="toggleApartment()" style="text-decoration: none" data-bs-toggle="collapse" href="#collapseApartment" role="button" aria-expanded="false" aria-controls="collapseApartment">
-      <div class="d-flex flex-row gap-3 justify-content-around align-items-center">
-        <span class="text-center fs-4">Apartment</span>
-        <i id="apartment-icon" class="bi bi-plus-circle-fill"></i>
-        <div class="container bg-secondary" style="height: 2px"></div>
-      </div>
-    </a>
-
-    <div class="container collapse p-0 mt-2" id="collapseApartment">
-      <div class="row">
-        <div class="col">
-          <label for="internInput" class="text-primary fs-4">Intern</label>
-          <div class="input-group">
-            <input id="internInput" type="number" data-formid="registerForm" class="form-control fs-5 remove-number-arrows" placeholder="7">
-            <button id="delete-internInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-            <div id="internInput-invalid-feedback" class="invalid-feedback"></div>
-            <div class="valid-feedback">Correct!</div>
-          </div>
+    <div class="row mt-5">
+      <div id="email-general-container" class="col mb-3">
+        <label for="email" class="text-primary fs-4 mb-2">Email address (*)</label>
+        <div class="input-group">
+          <input id="email" type="email" class="form-control fs-5" name="email" placeholder="name@example.com" required>
+          <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
+          <div id="email-invalid-feedback" class="invalid-feedback mt-2">Invalid!</div>
+          <div class="valid-feedback mt-2">Correct!</div>
         </div>
-        <div class="col">
-          <label for="floorInput" class="text-primary fs-4">Floor</label>
-          <div class="input-group">
-            <input id="floorInput" type="number" data-formid="registerForm" class="form-control fs-5 remove-number-arrows" placeholder="0">
-            <button id="delete-floorInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-            <div id="floorInput-invalid-feedback" class="invalid-feedback"></div>
-            <div class="valid-feedback">Correct!</div>
-          </div>
+      </div>
+      <div id="email-confirm-general-container" class="col-md">
+        <label for="email-confirm" class="text-primary fs-4 mb-2">Confirm Email (*)</label>
+        <div class="input-group">
+          <input id="email-confirm" type="email" class="form-control fs-5" name="email-confirm" placeholder="name@example.com" required>
+          <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
+          <div id="email-confirm-invalid-feedback" class="invalid-feedback mt-2">Invalid!</div>
+          <div class="valid-feedback mt-2">Correct!</div>
         </div>
       </div>
     </div>
 
-    <div class="d-grid gap-2 my-5">
-      <button id="registerForm-btn" type="submit" data-formid="registerForm" class="btn btn-primary fs-4">Enter</button>
+    <div class="row mt-5">
+      <div id="password-general-container" class="col mb-3">
+        <label for="password" class="text-primary fs-4 mb-2">Password (*)</label>
+        <div class="input-group">
+          <input type="password" class="form-control fs-5" name="password" placeholder="Password is hidden" required>
+          <button data-btn-action="show-password" type="button" class="btn btn-outline-secondary fs-5"><i class="bi bi-eye-fill"></i></button>
+          <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
+          <div id="password-invalid-feedback" class="invalid-feedback mt-2">Invalid!</div>
+          <div class="valid-feedback mt-2">Correct!</div>
+        </div>
+      </div>
+      <div id="password-confirm-general-container" class="col-md">
+        <label for="password-confirm" class="text-primary fs-4 mb-2">Confirm Password (*)</label>
+        <div class="input-group">
+          <input type="password" class="form-control fs-5" name="password-confirm" placeholder="Password is hidden" required>
+          <button data-btn-action="show-password" type="button" class="btn btn-outline-secondary fs-5"><i class="bi bi-eye-fill"></i></button>
+          <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
+          <div id="password-confirm-invalid-feedback" class="invalid-feedback mt-2">Invalid!</div>
+          <div class="valid-feedback mt-2">Correct!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-grid gap-2 mt-5">
+      <button type="submit" class="btn btn-primary fs-4" disabled>Register</button>
     </div>
   </form>
 
   <script src="../static/js/general.js"></script>
-  <script src="../static/js/validation.js"></script>
+  <script src="../static/js/classes.js"></script>
+  <script src="../static/js/register.js"></script>
 </body>
 </html>

@@ -8,14 +8,14 @@
     <meta http-equiv="refresh" content="0; url=nojs.html">
   </noscript>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
-
+  <link rel="stylesheet" href="../static/css/customcss.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 </head>
 <body>
 
-  <div class="container mb-5 mt-5 border-2 border-bottom border-primary b-2 text-center">
+  <div class="container mt-4 border-2 border-bottom border-primary p-0">
     <div class="row align-items-center justify-content-center mb-3 ">
       <div class="col-auto">
         <img src="../static/images/ptwsmarthouse_logo-512x512.svg" width="60px">
@@ -26,41 +26,42 @@
     </div>
   </div>
 
-  <form id="loginForm" class="container-sm needs-validation" action="" method="post" novalidate autocomplete="off">
-    <div class="mb-3">
-      <label for="emailInput" class="form-label text-primary fs-4 mb-2">Email address (*)</label>
+  <form id="login-form" class="container-sm needs-validation" action="" method="post" novalidate autocomplete="off">
+    <div id="email-general-container" class="mt-5">
+      <label for="email" class="form-label text-primary fs-4 mb-2">Email address (*)</label>
       <div class="input-group">
-        <input id="emailInput" type="email" data-formid="loginForm" class="form-control fs-5" placeholder="name@example.com" required>
+        <input type="email" class="form-control fs-5" placeholder="name@example.com" required>
         <!-- custom email constraint: pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?" -->
-        <button id="delete-emailInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-        <div id="emailInput-invalid-feedback" class="invalid-feedback"></div>
-        <div class="valid-feedback">Correct!</div>
+        <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
+        <div class="invalid-feedback mt-2">Invalid value!</div>
+        <div class="valid-feedback mt-2">Correct!</div>
       </div>
     </div>
 
-    <div class="mb-4">
-      <label for="passwordInput" class="form-label text-primary fs-4 mb-2">Password (*)</label>
+    <div id="password-general-container" class="mt-5">
+      <label for="password" class="form-label text-primary fs-4 mb-2">Password (*)</label>
       <div class="input-group">
-        <input id="passwordInput" type="password" data-formid="loginForm" class="form-control fs-5" placeholder="Password hidden" required>
-        <button type="button" class="btn btn-outline-secondary fs-5" onclick="togglePassword('passwordInput')"><i id="passwordInput-eye" class="bi bi-eye-fill"></i></button>
-        <button id="delete-passwordInput" type="button" class="btn btn-outline-secondary fs-5">X</button>
-        <div id="passwordInput-invalid-feedback" class="invalid-feedback"></div>
-        <div class="valid-feedback">Correct!</div>
+        <input type="password" data-formid="loginForm" class="form-control fs-5" placeholder="Password hidden" required>
+        <button data-btn-action="show-password" type="button" class="btn btn-outline-secondary fs-5"><i id="passwordInput-eye" class="bi bi-eye-fill"></i></button>
+        <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
+        <div class="invalid-feedback mt-2">Invalid value!</div>
+        <div class="valid-feedback mt-2">Correct!</div>
       </div>
     </div>
 
-    <div class="d-grid gap-2">
-      <button id="loginForm-btn" type="submit" data-formid="loginForm" class="btn btn-primary fs-4 mb-4" disabled>Enter</button>
+    <div class="d-grid gap-2 mt-5">
+      <input type="submit" class="btn btn-primary fs-4 mb-4" value="Login" disabled></input>
       <div class="d-flex flex-row gap-3 justify-content-around align-items-center">
         <div class="container bg-secondary" style="height: 2px"></div>
         <span class="d-block text-center text-secondary fs-4">OR</span>
         <div class="container bg-secondary" style="height: 2px"></div>
       </div>
-      <a href="register.html" class="btn btn-outline-primary fs-4">Register new house</a>
+      <a href="register.html" class="btn btn-outline-primary fs-4">Register</a>
     </div>
   </form>
 
   <script src="../static/js/general.js"></script>
-  <script src="../static/js/validation.js"></script>
+  <script src="../static/js/classes.js"></script>
+  <script src="../static/js/login.js"></script>
 </body>
 </html>
