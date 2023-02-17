@@ -26,12 +26,12 @@
         <span class="h1 text-primary fw-semibold">REGISTER</span>
       </div>
       <div class="col-auto text-end">
-        <a href="login.html" class="btn btn-outline-primary"><i class="bi bi-arrow-left" style="margin-right: 0.5rem"></i>Back to login</a>
+        <a href="{{url_for('login')}}" class="btn btn-outline-primary"><i class="bi bi-arrow-left" style="margin-right: 0.5rem"></i>Back to login</a>
       </div>
     </div>
   </div>
 
-  <form id="register-form" class="container" action="" method="post" novalidate>
+  <form id="register-form" class="container" action="{{url_for('register_user')}}" method="post" novalidate>
     <div class="row mt-5">
       <div id="name-general-container" class="col mb-3">
         <label for="name" class="text-primary fs-4 mb-2">Name (*)</label>
