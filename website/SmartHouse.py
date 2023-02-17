@@ -86,7 +86,7 @@ def register_user():
 		return "Tutto registrato"
 		
 	else:
-		return "Tutto a puttante, ma prima"
+		return "Qualcosa non va come previsto"
 
 
 if __name__=="__main__":
