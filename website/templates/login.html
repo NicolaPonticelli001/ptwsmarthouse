@@ -30,7 +30,7 @@
     <div id="email-general-container" class="mt-5">
       <label for="email" class="form-label text-primary fs-4 mb-2">Email address (*)</label>
       <div class="input-group">
-        <input type="email" class="form-control fs-5" placeholder="name@example.com" required>
+        <input type="email" name="email" class="form-control fs-5" placeholder="name@example.com" required>
         <!-- custom email constraint: pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?" -->
         <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
         <div class="invalid-feedback mt-2">Invalid value!</div>
@@ -41,7 +41,7 @@
     <div id="password-general-container" class="mt-5">
       <label for="password" class="form-label text-primary fs-4 mb-2">Password (*)</label>
       <div class="input-group">
-        <input type="password" data-formid="loginForm" class="form-control fs-5" placeholder="Password hidden" required>
+        <input type="password" name="password" class="form-control fs-5" placeholder="Password hidden" required>
         <button data-btn-action="show-password" type="button" class="btn btn-outline-secondary fs-5"><i id="passwordInput-eye" class="bi bi-eye-fill"></i></button>
         <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
         <div class="invalid-feedback mt-2">Invalid value!</div>
