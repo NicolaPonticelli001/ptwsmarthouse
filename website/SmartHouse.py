@@ -12,7 +12,7 @@ Session(app)
 
 @app.route("/")
 def index():
-	return redirect(url_for('home'))
+	return redirect(url_for('login'))
 
 @app.route("/home")
 def home():
@@ -55,6 +55,60 @@ def return_house_json():
 				}
 			}
 			y=y+json.dumps(x)
+		
+		return y
+	else:
+		return jesonify(error_type="SessionMissing",description="No Session existing for this user")
+
+@app.route("/home/account")
+def account():
+	if session.get("user"):
+		return "Tutto a posto: gestione utente"
+	else:
+		return redirect(url_for('login'))
+
+@app.route("/home/account/update",methods=["POST"])
+def update_user():
+	if session.get("user"):
+		conn=psycopg2.connect(
+		host="localhost",
+		database="ptw_smart_house_db",
+		user="ptw_admin",
+		password="SUPER_ROOT")
+	
+		cur=conn.cursor()
+		
+		bcrypt=Bcrypt(app)
+		password=bcrypt.generate_password_hash(request.form["password"]).decode('utf-8')
+		
+		cur.execute("UPDATE Customers SET email=%s,password=%s,telephone=%s,name=%s,surname=%s WHERE email=%s",
+			[request.form["email"],password,request.form["telephome"],request.form["name"],request.form["surname"],session.get('user')])
+			
+		return redirect(url_for('home'))
+	else:
+		return redirect(url_for('home'))
+
+@app.route("/home/account/get_data")
+def return_user_json():
+	if session.get("user"):
+		conn=psycopg2.connect(
+		host="localhost",
+		database="ptw_smart_house_db",
+		user="ptw_admin",
+		password="SUPER_ROOT")
+	
+		cur=conn.cursor()
+		
+		cur.execute("SELECT * FROM Customer WHERE email=%s",[session.get("user")])
+		row=cur.fetchone()
+		x={
+			"email": row[0],
+			"password": row[1],
+			"telephone": row[2],
+			"name":row[3],
+			"surname":row[4]
+		}
+		y=json.dumps(x)
 		
 		return y
 	else:
