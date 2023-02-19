@@ -1,8 +1,9 @@
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 import os
 import psycopg2
+import json
 
 app=Flask(__name__)
 app.config["SESSION_PERMANENT"]=False
@@ -10,17 +11,68 @@ app.config["SESSION_TYPE"]="filesystem"
 Session(app)
 
 @app.route("/")
+def index():
+	return redirect(url_for('home'))
+
+@app.route("/home")
 def home():
 	return render_template('home.html')
 
+@app.route("/home/userHomeSelection")
+def return_house_json():
+	if session.get("user"):
+		conn=psycopg2.connect(
+		host="localhost",
+		database="ptw_smart_house_db",
+		user="ptw_admin",
+		password="SUPER_ROOT")
+	
+		cur=conn.cursor()
+		
+		query='''
+		SELECT h.idhouse,h.name,r.idroom,r.name,iot.devicecode,iot.name,iot.type 
+		FROM CustomerHasHouse AS utente 
+		INNER JOIN House AS h ON utente.idhouse=h.idhouse
+		INNER JOIN Room AS r ON h.idhouse=r.idhouse
+		INNER JOIN IoTDevice AS iot ON r.idroom=iot.idroom
+		WHERE email='''
+		query=query+"'"+session.get("user")+"';"
+		cur.execute(query)
+		y=""
+		for row in  cur.fetchall():
+			x={
+				row[0]:{
+					"name": row[1],
+					"stanze":{
+						row[2]:{
+							"name": row[3],
+							"devices":{
+								"name":row[4],
+								"type": row[5]
+							}
+						}
+					}
+				}
+			}
+			y=y+json.dumps(x)
+		
+		return y
+	else:
+		return jesonify(error_type="SessionMissing",description="No Session existing for this user")
+
 @app.route("/login")
 def login():
+	return render_template('login.html')
+	
+@app.route("/logout")
+def logout():
+	session['user']=None
 	return render_template('login.html')
 
 @app.route("/userhome",methods=['POST'])
 def userhome():
 	if request.method=='POST':
-		session['user']=request.form['email']
+		
 		
 		
 		conn=psycopg2.connect(
@@ -41,6 +93,7 @@ def userhome():
 		
 		bcrypt=Bcrypt(app)
 		if bcrypt.check_password_hash(rows[1],password):
+			session['user']=request.form['email']
 			return rows[1]
 	else:
 		return redirect(url_for('login'))
@@ -86,8 +139,9 @@ def register_user():
 		return "Tutto registrato"
 		
 	else:
-		return "Qualcosa non va come previsto"
+		return "TQualcosa non è andato come previsto"
 
 
 if __name__=="__main__":
 	app.run(host='0.0.0.0',port=9600,debug=True)
+
