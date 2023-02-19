@@ -117,3 +117,51 @@ class Form {
     else this.submit_button.setAttribute("disabled", "")
   }
 }
+
+class TemplateElement {
+
+
+  constructor() {
+
+  }
+
+}
+
+class Device extends TemplateElement {
+
+
+  constructor() {
+
+  }
+
+}
+
+class SelectElement {
+  #select_element
+  #options
+  #value_text_selected
+
+  constructor(idSelect, objArrayIdValueOption, setFirstSelected = true) {
+    this.select_element = document.getElementById(idSelect)
+    this.options = []
+    for (let obj of objArrayIdValueOption) {
+      let option = document.createElement("option")
+      option.setAttribute("value", obj.id)
+      option.textContent = obj.name
+      this.options.push(option)
+    }
+    if (setFirstSelected) this.options[0].setAttribute("selected", "")
+    this.appendOption()
+    this.value_text_selected = {
+      value: this.select_element.options[this.select_element.selectedIndex].value,
+      text: this.select_element.options[this.select_element.selectedIndex].text
+    };
+  }
+
+  appendOption() {
+    for (let option of this.options) this.select_element.appendChild(option)
+  }
+
+  getValueTextSelected() { return this.value_text_selected }
+
+}

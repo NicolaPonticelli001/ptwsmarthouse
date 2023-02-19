@@ -2,7 +2,7 @@ window.addEventListener('load', afterWindowLoad());
 
 // Operations to be executed after page loaded
 function afterWindowLoad() {
-    getUrlParameters()
+
 }
 
 function getUrlParameters() {
