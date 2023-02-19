@@ -118,31 +118,120 @@ class Form {
   }
 }
 
-class TemplateElement {
+class Template {
+  #element_container
+  #cloned_content
 
-
-  constructor() {
-
+  constructor(elementTemplate, elementContainer) {
+    this.element_container = elementContainer
+    this.cloned_content = elementTemplate.content.cloneNode(true)
   }
 
+  appendTemplate() { this.element_container.appendChild(this.cloned_content) }
+  deleteContainerContent() { this.element_container.innerHTML = "" }
+
+  getElementContainer() { return this.element_container }
+  getClonedContentAsFragment() { return this.cloned_content }
+  getClonedContentAsElement() { return this.cloned_content }
 }
 
-class Device extends TemplateElement {
+class Room extends Template {
+  #room_name
+  #room_id
+  #devices_obj
+  #room_html_element
 
-
-  constructor() {
-
+  constructor(elementTemplate, elementContainer, roomName, roomId) {
+    super(elementTemplate, elementContainer)
+    this.room_name = roomName
+    this.room_id = roomId
+    this.completeElementsId()
+    this.parseDataElements()
+    super.appendTemplate()
+    this.devices_obj = []
+    this.room_html_element = elementContainer.querySelector("#room-"+roomId)
   }
 
+  completeElementsId() {
+    let elements = super.getClonedContentAsFragment().querySelectorAll("[data-completeId]")
+    for (let element of elements) {
+      element.id += this.room_id
+      element.removeAttribute("data-completeId")
+    }
+  }
+
+  parseDataElements() {
+    let elements = super.getClonedContentAsFragment().querySelectorAll("[data-parseJsonData]")
+    for (let element of elements) {
+      switch (element.getAttribute("data-parseJsonData")) {
+        case "room-name":
+          element.textContent = this.room_name
+          break;
+      }
+      element.removeAttribute("data-parseJsonData")
+    }
+  }
+
+  hideRoom() { this.room_html_element.classList.add("hide") }
+  showRoom() { this.room_html_element.classList.remove("hide") }
+
+  addDevice(deviceObj) { this.devices_obj.push(deviceObj) }
+  getDevices() { return this.devices_obj }
+  getRoomName() { return this.room_name }
+  getRoomId() { return this.room_id }
+}
+
+class Device extends Template {
+  #device_name
+  #device_id
+  #device_type
+
+  constructor(elementTemplate, elementContainer, deviceName, deviceId, deviceType) {
+    super(elementTemplate, elementContainer)
+    this.device_name = deviceName
+    this.device_id = deviceId
+    this.device_type = deviceType
+    this.completeElementsId()
+    this.parseDataElements()
+    super.appendTemplate()
+  }
+
+  completeElementsId() {
+    let elements = super.getClonedContentAsFragment().querySelectorAll("[data-completeId]")
+    for (let element of elements) {
+      element.id += this.device_id
+      element.removeAttribute("data-completeId")
+    }
+  }
+
+  parseDataElements() {
+    let elements = super.getClonedContentAsFragment().querySelectorAll("[data-parseJsonData]")
+    for (let element of elements) {
+      switch (element.getAttribute("data-parseJsonData")) {
+        case "device-name":
+          element.textContent = this.device_name
+          break;
+      }
+      element.removeAttribute("data-parseJsonData")
+    }
+  }
+
+  getDeviceName() { return this.device_name }
+  getDeviceId() { return this.device_id }
+  getDeviceType() { return this.device_type }
 }
 
 class SelectElement {
   #select_element
   #options
-  #value_text_selected
 
   constructor(idSelect, objArrayIdValueOption, setFirstSelected = true) {
     this.select_element = document.getElementById(idSelect)
+    this.setOptionElements(objArrayIdValueOption, setFirstSelected)
+  }
+
+  setOptionElements(objArrayIdValueOption, setFirstSelected = true) {
+    for (let index in this.select_element) this.select_element.remove(index)
     this.options = []
     for (let obj of objArrayIdValueOption) {
       let option = document.createElement("option")
@@ -151,17 +240,20 @@ class SelectElement {
       this.options.push(option)
     }
     if (setFirstSelected) this.options[0].setAttribute("selected", "")
-    this.appendOption()
-    this.value_text_selected = {
-      value: this.select_element.options[this.select_element.selectedIndex].value,
-      text: this.select_element.options[this.select_element.selectedIndex].text
-    };
-  }
-
-  appendOption() {
     for (let option of this.options) this.select_element.appendChild(option)
   }
 
-  getValueTextSelected() { return this.value_text_selected }
+  getSelectedText() { return this.select_element.options[this.select_element.selectedIndex].text }
+  getSelectedValue() { return this.select_element.options[this.select_element.selectedIndex].value }
+  getSelectElement() { return this.select_element }
 
+}
+
+class JsonHousesRoomsDevices {
+  #json_obj
+
+
+  constructor(jsonString) {
+    this.json_obj = JSON.parse(jsonString)
+  }
 }

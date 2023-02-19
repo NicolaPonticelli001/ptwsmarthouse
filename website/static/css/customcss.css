@@ -9,3 +9,7 @@
 .remove-number-arrows {
   -moz-appearance: textfield;
 }
+
+.hide {
+  display: none;
+}

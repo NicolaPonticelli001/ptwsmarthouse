@@ -2,7 +2,7 @@ class TemplateElement {
   #element_container
   #template_cloned_content
 
-  constructor(elementTemplate, elementContainer, jsonObj) {
+  constructor(elementTemplate, elementContainer) {
     this.element_container = elementContainer
     this.template_cloned_content = elementTemplate.content.cloneNode(true)
   }
