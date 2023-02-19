@@ -8,12 +8,13 @@ CREATE TABLE Customer(
 	PRIMARY KEY(email)
 );
 
+
 CREATE TABLE Permission(
 	name text PRIMARY KEY
 );
 
 CREATE TABLE House(
-	idHouse integer PRIMARY KEY,
+	idHouse SERIAL PRIMARY KEY,
 	name text NOT NULL,
 	state text NOT NULL,
 	region text NOT NULL,
@@ -23,20 +24,35 @@ CREATE TABLE House(
 	address text NOT NULL,
 	number integer NOT NULL
 );
+INSERT INTO House (idhouse,name,state,region,district,city,zipcode,address,number) VALUES (DEFAULT,'Casa al mare','Italy',
+'Abruzzo','PE','Pescara','65121','Via Lungomare',5);
+INSERT INTO House (idhouse,name,state,region,district,city,zipcode,address,number) VALUES (DEFAULT,'Casa','Italy',
+'Campania','NA','Napoli','80130','Via Lungomare',5);
+INSERT INTO House (idhouse,name,state,region,district,city,zipcode,address,number) VALUES (DEFAULT,'Casa','Italy',
+'Campania','NA','Casalnuovo di Napoli','80013','Corso Vittorio Emanuele',0);
+INSERT INTO House (idhouse,name,state,region,district,city,zipcode,address,number) VALUES (DEFAULT,'Mountain house','Italy',
+'Toscana','LU','Lucca','55100','Alpi Apuane',0);
+INSERT INTO House (idhouse,name,state,region,district,city,zipcode,address,number) VALUES (DEFAULT,'Holiday house','Italy',
+'Puglia','BA','Giovinazzo','70054','Via Lungomare',1);
 
 CREATE TABLE CustomerHasHouse(
-	email text NOT NULL UNIQUE,
-	idHouse integer NOT NULL UNIQUE,
+	email text NOT NULL,
+	idHouse serial NOT NULL,
 	
-	PRIMARY KEY(email,idHouse),
+	CONSTRAINT customerhashouse_key PRIMARY KEY (email,idHouse),
 	FOREIGN KEY(email) REFERENCES Customer(email),
 	FOREIGN KEY(idHouse) REFERENCES House(idHouse)
 );
+INSERT INTO Customerhashouse (email,idhouse) VALUES ('root01@email.com',1);
+INSERT INTO Customerhashouse (email,idhouse) VALUES ('root01@email.com',2);
+INSERT INTO Customerhashouse (email,idhouse) VALUES ('nicola.ponticelli831@gmail.com',3);
+INSERT INTO Customerhashouse (email,idhouse) VALUES ('root01@email.com',4);
+INSERT INTO Customerhashouse (email,idhouse) VALUES ('nicola.ponticelli831@gmail.com',5);
 
 CREATE TABLE CustomerHasPermission(
 	permissionName text NOT NULL,
 	customerEmail text NOT NULL,
-	idHouse integer NOT NULL,
+	idHouse serial NOT NULL,
 	isGranted boolean NOT NULL,
 	
 	PRIMARY KEY(permissionName,customerEmail,idHouse),
@@ -46,22 +62,40 @@ CREATE TABLE CustomerHasPermission(
 );
 
 CREATE TABLE Room(
-	idHouse integer NOT NULL UNIQUE,
-	idRoom integer NOT NULL UNIQUE,
+	idHouse serial NOT NULL ,
+	idRoom serial NOT NULL ,
 	name text NOT NULL,
 	
-	PRIMARY KEY(idHouse,idRoom),
+	CONSTRAINT room_key PRIMARY KEY(idHouse,idRoom),
 	FOREIGN KEY(idHouse) REFERENCES House(idHouse)
 );
+INSERT INTO Room (idhouse,idroom,name) VALUES (1,DEFAULT,'Saloon'); #casa mia mare
+INSERT INTO Room (idhouse,idroom,name) VALUES (2,DEFAULT,'kitchen'); #casa mia
+INSERT INTO Room (idhouse,idroom,name) VALUES (2,DEFAULT,'saloon'); #casa mia
+INSERT INTO Room (idhouse,idroom,name) VALUES (3,DEFAULT,'bedroom'); #casa niki
+INSERT INTO Room (idhouse,idroom,name) VALUES (3,DEFAULT,'kitchen'); #casa niki
+INSERT INTO Room (idhouse,idroom,name) VALUES (1,DEFAULT,'bathroom'); #casa mia mare
+INSERT INTO Room (idhouse,idroom,name) VALUES (4,DEFAULT,'cucina'); #casa mia montagna
+INSERT INTO Room (idhouse,idroom,name) VALUES (5,DEFAULT,'stanza da pranzo'); #casa mare niki
 
 CREATE TABLE IoTDevice(
 	deviceCode integer NOT NULL,
-	idHouse integer NOT NULL,
-	idRoom integer NOT NULL,
+	idHouse serial NOT NULL,
+	idRoom serial NOT NULL,
 	name text NOT NULL,
 	type text NOT NULL,
 	
 	PRIMARY KEY(deviceCode),
-	FOREIGN KEY(idHouse) REFERENCES Room(idHouse),
-	FOREIGN KEY(idRoom) REFERENCES Room(idRoom)
+	FOREIGN KEY(idHouse,idRoom) REFERENCES Room(idHouse,idRoom)
 );
+
+INSERT INTO IoTDevice (devicecode,idhouse,idroom,name,type) VALUES (10,1,1,'ESP-SmartTv','Smart ON/OFF');
+INSERT INTO IoTDevice (devicecode,idhouse,idroom,name,type) VALUES (11,1,6,'Arduino-Termostato','Smart Regulation');
+INSERT INTO IoTDevice (devicecode,idhouse,idroom,name,type) VALUES (12,2,2,'Smart-Fridge','Smart List');
+INSERT INTO IoTDevice (devicecode,idhouse,idroom,name,type) VALUES (13,2,3,'ESP-SmartTv','Smart ON/OFF');
+INSERT INTO IoTDevice (devicecode,idhouse,idroom,name,type) VALUES (14,2,2,'Smart-AirConditioner','Smart Regulation');
+INSERT INTO IoTDevice (devicecode,idhouse,idroom,name,type) VALUES (15,3,4,'ESP-Tapparelle','Smart Regulation');
+INSERT INTO IoTDevice (devicecode,idhouse,idroom,name,type) VALUES (16,3,4,'ESP-SmartTv','Smart ON/OFF');
+INSERT INTO IoTDevice (devicecode,idhouse,idroom,name,type) VALUES (17,3,5,'Smart-Fridge','Smart Regulation');
+INSERT INTO IoTDevice (devicecode,idhouse,idroom,name,type) VALUES (18,4,7,'ArduinoSolarPanel','Smart Report');
+INSERT INTO IoTDevice (devicecode,idhouse,idroom,name,type) VALUES (19,5,8,'Arduino-Tapparelle','Smart Regulation');
