@@ -1,9 +1,57 @@
-from flask import Flask, render_template, redirect, url_for, request, session, jsonify
+from flask import Flask, render_template, redirect, url_for, request, session
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 import os
 import psycopg2
 import json
+
+# Mqtt imports
+import time
+import paho.mqtt.client as paho
+from paho import mqtt
+
+# setting callbacks for different events to see if it works, print the message etc.
+def on_connect(client, userdata, flags, rc, properties=None):
+    print("CONNACK received with code %s." % rc)
+
+# with this callback you can see if your publish was successful
+def on_publish(client, userdata, mid, properties=None):
+    print("mid: " + str(mid))
+
+# print which topic was subscribed to
+def on_subscribe(client, userdata, mid, granted_qos, properties=None):
+    print("Subscribed: " + str(mid) + " " + str(granted_qos))
+
+# print message, useful for checking if it was successful
+def on_message(client, userdata, msg):
+    print("|Topic: " + msg.topic + "| - |Qos: " + str(msg.qos) + "| - |Payload: " + str(msg.payload) + "|")
+
+# using MQTT version 5 here, for 3.1.1: MQTTv311, 3.1: MQTTv31
+# userdata is user defined data of any type, updated by user_data_set()
+# client_id is the given name of the client
+client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv5)
+client.on_connect = on_connect
+
+# enable TLS for secure connection
+client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
+# set username and password
+client.username_pw_set("raspserver", "Raspserver-2023")
+# connect to HiveMQ Cloud on port 8883 (default for MQTT)
+client.connect("6dd678185e194e4ca3c7ffd5fe9abf15.s2.eu.hivemq.cloud", 8883)
+
+# setting callbacks, use separate functions like above for better visibility
+client.on_subscribe = on_subscribe
+client.on_message = on_message
+client.on_publish = on_publish
+
+# subscribe to all topics of encyclopedia by using the wildcard "#"
+client.subscribe("#", qos=2)
+
+# a single publish, this can also be done in loops, etc.
+#client.publish("test", payload="test send", qos=1)
+
+# loop_forever for simplicity, here you need to stop the loop manually
+# you can also use loop_start and loop_stop
 
 app=Flask(__name__)
 app.config["SESSION_PERMANENT"]=False
@@ -16,9 +64,12 @@ def index():
 
 @app.route("/home")
 def home():
-	return render_template('home.html')
+	if session.get("user"):
+		return render_template('home.html')
+	else:
+		return redirect(url_for('login'))
 
-@app.route("/home/userHomeSelection")
+@app.route("/home/userHomeSelection", methods=["POST"])
 def return_house_json():
 	if session.get("user"):
 		utente=session.get("user")
@@ -105,7 +156,7 @@ def return_user_json():
 		
 		return y
 	else:
-		return jesonify(error_type="SessionMissing",description="No Session existing for this user")
+		return {"status":"session missing"}
 
 @app.route("/login")
 def login():
@@ -114,10 +165,10 @@ def login():
 @app.route("/logout")
 def logout():
 	session['user']=None
-	return render_template('login.html')
+	return redirect(url_for('login'))
 
-@app.route("/userhome",methods=['POST'])
-def userhome():
+@app.route("/loginverification",methods=['POST'])
+def loginverification():
 	if request.method=='POST':
 		conn=psycopg2.connect(
 		host="localhost",
@@ -150,7 +201,7 @@ def error_nojs():
 def register():
 	return render_template('register.html')
 
-@app.route("/confirmed_registration",methods=['POST'])
+@app.route("/register_user",methods=['POST'])
 def register_user():
 	if request.method=='POST':
 		conn=psycopg2.connect(
@@ -180,12 +231,85 @@ def register_user():
 			conn.commit()
 		cur.close()
 		conn.close()
-		return "Tutto registrato"
+		return redirect(url_for('home'))
 		
 	else:
-		return "TQualcosa non è andato come previsto"
+		return redirect(url_for('register'))
 
+
+@app.route("/device/login_device",methods=["POST"])
+def login_device():
+	if request.method=='POST':
+		conn=psycopg2.connect(
+		host="localhost",
+		database="ptw_smart_house_db",
+		user="ptw_admin",
+		password="SUPER_ROOT")
+	
+		cur=conn.cursor()
+		
+		email=request.form['email']
+		password=request.form['password']
+		cur.execute('SELECT email,password FROM Customer WHERE email= %s',[email])
+		rows=cur.fetchone()
+		conn.commit()
+		
+		cur.close()
+		
+		bcrypt=Bcrypt(app)
+		if bcrypt.check_password_hash(rows[1],password):
+			session['device_user']=request.form['email']
+			
+			cur_house=conn.cursor()
+			cur_room=conn.cursor()
+		
+		
+			query1="SELECT house.idhouse,name FROM House JOIN CustomerHasHouse AS ch ON house.idhouse=ch.idhouse WHERE email=%s"
+			cur_house.execute(query1,[email])
+			x={}
+			for row_house in  cur_house.fetchall():
+				x.update({row_house[0]:{"name":row_house[1]}})
+				query2="SELECT idroom,name FROM Room WHERE idhouse=%s"
+				cur_room.execute(query2,[row_house[0]])
+				x[row_house[0]].update({"stanze":{}})
+				for row_room in cur_room.fetchall():
+					x[row_house[0]]["stanze"].update({row_room[0]:{"name":row_room[1]}})
+			y=json.dumps(x)
+			cur_house.close()
+			cur_room.close()
+			conn.close()
+			return y
+		else:
+			return {"status":"login failed"}
+	else:
+		return {"status":"method not allowed"}
+
+@app.route("/device/add_device",methods=["POST"])
+def add_device():
+	#Insert iotdevice
+	#"house","room","name","type","onoff=f"
+	if session.get("device_user"):
+		if reques.method=="POST":
+			conn=psycopg2.connect(
+			host="localhost",
+			database="ptw_smart_house_db",
+			user="ptw_admin",
+			password="SUPER_ROOT")
+	
+			cur=conn.cursor()
+			query="INSERT INTO IoTDevice (deviceCode,idHouse,idRoom,name,type,onoff) VALUES (DEFAULT,%s,%s,%s,%s,False)"
+			cur.execute(query,[request.form["house"],request.form["room"],request.form["name"],request.form["type"]])
+			if cursor.rowcount==1:
+				return json.dumps({"status":"inserted"})
+			else:
+				return json.dumps({"status":"insert fail"})
+		else:
+			return json.dumps({"status":"method not allowd"})
+	else:
+		return json.dumps({"status":"session missing"})
 
 if __name__=="__main__":
+	client.loop_start()
 	app.run(host='0.0.0.0',port=9600,debug=True)
+	
 
