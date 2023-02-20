@@ -34,7 +34,6 @@ def return_house_json():
 		
 		query1="SELECT house.idhouse,name FROM House JOIN CustomerHasHouse AS ch ON house.idhouse=ch.idhouse WHERE email=%s"
 		cur_house.execute(query1,[utente])
-		row_house=cur_house.fetchone()
 		x={}
 		for row_house in  cur_house.fetchall():
 			x.update({row_house[0]:{"name":row_house[1]}})
