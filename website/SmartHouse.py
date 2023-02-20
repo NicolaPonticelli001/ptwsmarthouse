@@ -52,7 +52,7 @@ def return_house_json():
 		y=json.dumps(x)
 		return y
 	else:
-		return jesonify(error_type="SessionMissing",description="No Session existing for this user")
+		return {"error_type":"SessionMissing","description":"No Session existing for this user"}
 
 @app.route("/home/account")
 def account():
