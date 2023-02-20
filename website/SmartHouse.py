@@ -12,7 +12,7 @@ Session(app)
 
 @app.route("/")
 def index():
-	return redirect(url_for('login'))
+	return redirect(url_for('home'))
 
 @app.route("/home")
 def home():
@@ -21,41 +21,35 @@ def home():
 @app.route("/home/userHomeSelection")
 def return_house_json():
 	if session.get("user"):
+		utente=session.get("user")
 		conn=psycopg2.connect(
 		host="localhost",
 		database="ptw_smart_house_db",
 		user="ptw_admin",
 		password="SUPER_ROOT")
 	
-		cur=conn.cursor()
+		cur_house=conn.cursor()
+		cur_room=conn.cursor()
+		cur_device=conn.cursor()
 		
-		query='''
-		SELECT h.idhouse,h.name,r.idroom,r.name,iot.devicecode,iot.name,iot.type 
-		FROM CustomerHasHouse AS utente 
-		INNER JOIN House AS h ON utente.idhouse=h.idhouse
-		INNER JOIN Room AS r ON h.idhouse=r.idhouse
-		INNER JOIN IoTDevice AS iot ON r.idroom=iot.idroom
-		WHERE email='''
-		query=query+"'"+session.get("user")+"';"
-		cur.execute(query)
-		y=""
-		for row in  cur.fetchall():
-			x={
-				row[0]:{
-					"name": row[1],
-					"stanze":{
-						row[2]:{
-							"name": row[3],
-							"devices":{
-								"name":row[4],
-								"type": row[5]
-							}
-						}
-					}
-				}
-			}
-			y=y+json.dumps(x)
-		
+		query1="SELECT house.idhouse,name FROM House JOIN CustomerHasHouse AS ch ON house.idhouse=ch.idhouse WHERE email=%s"
+		cur_house.execute(query1,[utente])
+		row_house=cur_house.fetchone()
+		x={}
+		for row_house in  cur_house.fetchall():
+			x.update({row_house[0]:{"name":row_house[1]}})
+			query2="SELECT idroom,name FROM Room WHERE idhouse=%s"
+			cur_room.execute(query2,[row_house[0]])
+			x[row_house[0]].update({"stanze":{}})
+			for row_room in cur_room.fetchall():
+				x[row_house[0]]["stanze"].update({row_room[0]:{"name":row_room[1]}})
+				query3="SELECT devicecode,name,type FROM IoTDevice WHERE idroom=%s"
+				cur_device.execute(query3,[row_room[0]])
+				x[row_house[0]]["stanze"][row_room[0]].update({"devices":{}})
+				for row_device in cur_device.fetchall():
+					x[row_house[0]]["stanze"][row_room[0]]["devices"].update({row_device[0]:{"name":row_device[1],"type":row_device[2]}})
+					
+		y=json.dumps(x)
 		return y
 	else:
 		return jesonify(error_type="SessionMissing",description="No Session existing for this user")
@@ -126,9 +120,6 @@ def logout():
 @app.route("/userhome",methods=['POST'])
 def userhome():
 	if request.method=='POST':
-		
-		
-		
 		conn=psycopg2.connect(
 		host="localhost",
 		database="ptw_smart_house_db",
@@ -148,7 +139,7 @@ def userhome():
 		bcrypt=Bcrypt(app)
 		if bcrypt.check_password_hash(rows[1],password):
 			session['user']=request.form['email']
-			return rows[1]
+			return redirect(url_for('home'))
 	else:
 		return redirect(url_for('login'))
 
