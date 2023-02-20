@@ -26,12 +26,11 @@
     </div>
   </div>
 
-  <form id="login-form" class="container-sm needs-validation" action="{{url_for('userhome')}}" method="post" novalidate autocomplete="off">
+  <form id="login-form" class="container-sm needs-validation" action="{{url_for('loginverification')}}" method="post" novalidate autocomplete="off">
     <div id="email-general-container" class="mt-5">
       <label for="email" class="form-label text-primary fs-4 mb-2">Email address (*)</label>
       <div class="input-group">
         <input type="email" name="email" class="form-control fs-5" placeholder="name@example.com" required>
-        <!-- custom email constraint: pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?" -->
         <button data-btn-action="delete-input" type="button" class="btn btn-outline-secondary fs-5">X</button>
         <div class="invalid-feedback mt-2">Invalid value!</div>
         <div class="valid-feedback mt-2">Correct!</div>
