@@ -1,14 +1,5 @@
 window.addEventListener("load", homeBodyLoad)
-let json_str// = '{ "1":{"name":"casa 1","stanze":{"1":{"name":"stanza 1","devices":{"1":{"name":"device 1","type":"son/off"}}},"2":{"name":"stanza 2","devices":{"2":{"name":"device 2","type":"son/off"}}}}}, "2":{"name":"casa 2","stanze":{"1":{"name":"stanza 1","devices":{"3":{"name":"device 3","type":"son/off"}}}}} }'
-// Get the json file from the webserver
-let xhttp = new XMLHttpRequest()
-xhttp.onload = function() {
-  json_str = this.responseText
-}
-xhttp.open("POST", {{ url_for("return_house_json") }})   // {{ url_for("return_house_json") }}
-xhttp.send()
-console.log(json_str)
-let json_parsed = JSON.parse(json_str)
+// = '{ "1":{"name":"casa 1","stanze":{"1":{"name":"stanza 1","devices":{"1":{"name":"device 1","type":"son/off"}}},"2":{"name":"stanza 2","devices":{"2":{"name":"device 2","type":"son/off"}}}}}, "2":{"name":"casa 2","stanze":{"1":{"name":"stanza 1","devices":{"3":{"name":"device 3","type":"son/off"}}}}} }'
 
 // Object with the key names that are inside the json received. If the json structure change
 // then it only needs to change the names here. in this way the code is less dependent from json key names
@@ -22,31 +13,38 @@ let json_keys = {
 }
 
 function homeBodyLoad() {
-  // Set the two select
-  let obj_array_id_value_option
-  obj_array_id_value_option = getHouses()   // Get the houses info to be inserted in the house select
-  let select_house = new SelectElement("select-house", obj_array_id_value_option) // Create the object and updating the select
-  obj_array_id_value_option = getRooms(select_house.getSelectedValue())   // Get the rooms info of the selected house. They will be inserted in the room select
-  let select_room = new SelectElement("select-room", obj_array_id_value_option, false)  // Create the object and updating the select. The boolean value means that the constructor does not select the first value
+  const xhttp = new XMLHttpRequest()
+  xhttp.onload = function() {
+    let json_parsed = JSON.parse(this.responseText)
 
-  // Set the device list
-  let rooms_obj = displayRoomsAndDevices(json_parsed[select_house.getSelectedValue()][json_keys.rooms_array_name])
+    // Set the two select
+    let obj_array_id_value_option
+    obj_array_id_value_option = getHouses()   // Get the houses info to be inserted in the house select
+    let select_house = new SelectElement("select-house", obj_array_id_value_option) // Create the object and updating the select
+    obj_array_id_value_option = getRooms(select_house.getSelectedValue())   // Get the rooms info of the selected house. They will be inserted in the room select
+    let select_room = new SelectElement("select-room", obj_array_id_value_option, false)  // Create the object and updating the select. The boolean value means that the constructor does not select the first value
 
-  //Listener that update the room select and the device list when the user select a different house
-  select_house.getSelectElement().addEventListener(
-    "change",
-    function() {
-      changeHouseSelection(select_house.getSelectedValue(), select_room)  // Update the option elements of the room select with the right data
-      document.getElementById("list").innerHTML = ""  // Delete the device list content
-      rooms_obj = displayRoomsAndDevices(json_parsed[select_house.getSelectedValue()][json_keys.rooms_array_name])  //The device list is regenerated with the right devices
-  })
+    // Set the device list
+    let rooms_obj = displayRoomsAndDevices(json_parsed[select_house.getSelectedValue()][json_keys.rooms_array_name])
 
-  // Listener that show and hide the rooms inside the device list (the room is a containers in which there are the devices)
-  select_room.getSelectElement().addEventListener(
-    "change",
-    function() {
-      changeRoomView(select_room.getSelectedValue(), rooms_obj) // Hide the room containers and show the selected one
-  })
+    //Listener that update the room select and the device list when the user select a different house
+    select_house.getSelectElement().addEventListener(
+      "change",
+      function() {
+        changeHouseSelection(select_house.getSelectedValue(), select_room)  // Update the option elements of the room select with the right data
+        document.getElementById("list").innerHTML = ""  // Delete the device list content
+        rooms_obj = displayRoomsAndDevices(json_parsed[select_house.getSelectedValue()][json_keys.rooms_array_name])  //The device list is regenerated with the right devices
+    })
+
+    // Listener that show and hide the rooms inside the device list (the room is a containers in which there are the devices)
+    select_room.getSelectElement().addEventListener(
+      "change",
+      function() {
+        changeRoomView(select_room.getSelectedValue(), rooms_obj) // Hide the room containers and show the selected one
+    })
+  }
+  xhttp.open("POST", "/home/userHomeSelection")
+  xhttp.send()
 }
 
 // Display the selected room container and hide the others
