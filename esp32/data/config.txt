@@ -1,0 +1,4 @@
+config_status:config
+ssid: TIM-Ponticelli
+password: @Ponticelli@2.4/5G
+topic:

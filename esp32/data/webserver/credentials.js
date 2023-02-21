@@ -9,7 +9,7 @@ function checkCredentials() {
   const inputPassword = document.querySelector('input[name="password"]')
 
   xhttp.onload = function() {
-    console.log(responseText)
+    document.getElementById("log").innerHTML = this.responseText
   }
 
   xhttp.open("POST", "accountCredentials")
