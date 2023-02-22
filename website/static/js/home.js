@@ -32,14 +32,31 @@ function homeBodyLoad() {
 
     // Set the device list
     rooms_obj = displayRoomsAndDevices(json_parsed[select_house.getSelectedValue()][json_keys.rooms_array_name])
+    
+    // Listener for each status button of the devices
+    for (let room of rooms_obj) {
+      for (let device of room.getDevices()) {
+        device.getDeviceButton().addEventListener("click", function() { changeStatus(device) })
+        console.log(device.getDeviceButton())
+      }
+    }
 
     //Listener that update the room select and the device list when the user select a different house
     select_house.getSelectElement().addEventListener(
       "change",
       function() {
+        clearTimeout(timeout)
         changeHouseSelection(select_house.getSelectedValue(), select_room)  // Update the option elements of the room select with the right data
         document.getElementById("list").innerHTML = ""  // Delete the device list content
         rooms_obj = displayRoomsAndDevices(json_parsed[select_house.getSelectedValue()][json_keys.rooms_array_name])  //The device list is regenerated with the right devices
+        // Listener for each status button of the devices
+        for (let room of rooms_obj) {
+          for (let device of room.getDevices()) {
+            device.getDeviceButton().addEventListener("click", function() { changeStatus(device) })
+            console.log(device.getDeviceButton())
+          }
+        }
+        getDevicesStatus()
     })
 
     // Listener that show and hide the rooms inside the device list (the room is a containers in which there are the devices)
@@ -49,13 +66,6 @@ function homeBodyLoad() {
         changeRoomView(select_room.getSelectedValue(), rooms_obj) // Hide the room containers and show the selected one
     })
 
-    // Listener for each status button of the devices
-    for (room of rooms_obj) {
-      for (device of room.getDevices()) {
-        device.getDeviceButton("click", function() { changeStatus(device) })
-      }
-    }
-
     getDevicesStatus()
   }
   xhttp.open("POST", "/home/userHomeSelection")
@@ -64,34 +74,42 @@ function homeBodyLoad() {
 
 // /device/publish status: "on" oppure "off" - device: id_device
 function changeStatus(device) {
+  console.log("change status of device " + device.getDeviceName())
   const xhttp = new XMLHttpRequest()
-  if (device.getStatus()) device.setDeviceBtnOff()
-  else setDeviceBtnOn()
+  const form_data = new FormData()
+  form_data.append("status", (device.getStatus()) ? "off" : "on")   //If the current status is off then turn the device on
+  form_data.append("device", device.getDeviceId())
+  
+  xhttp.onload = function() {
+    console.log(JSON.parse(this.responseText).status)
+  }
+  
   xhttp.open("POST", "/device/publish")
-  xhttp.send("status=" + select_room.getSelectedValue() + "&device=" + (device.getStatus()) ? "on" : "off")
+  xhttp.send(form_data)
 }
 
 
 // /home/getstatus
-
 function getDevicesStatus() {
   const xhttp = new XMLHttpRequest()
+  const form_data = new FormData()
+  form_data.append("house", select_house.getSelectedValue())
   xhttp.onload = function() {
 
-    let str_status = '{"1": {"10": false}, "6": {"11": false}, "2": {"12": false, "14": false}, "3": {"13": false}, "7": {"18": false}}'
-    let json_status = JSON.parse(str_status)
+    //let str_status = '{"1": {"10": false}, "6": {"11": false}, "2": {"12": false, "14": false}, "3": {"13": false}, "7": {"18": false}}'
+    let json_status = JSON.parse(this.responseText)
 
-    for (room of rooms_obj) {
-      for (device of room.getDevices()) {
+    for (let room of rooms_obj) {
+      for (let device of room.getDevices()) {
         if (json_status[room.getRoomId()][device.getDeviceId()]) {
           device.setDeviceBtnOn()
-        } else setDeviceBtnOff()
+        } else device.setDeviceBtnOff()
       }
     }
     timeout = setTimeout(getDevicesStatus, timeout_value)
   }
-  xhttp.open("POST", "/home/getstatus")
-  xhttp.send("house=" + select_room.getSelectedValue())
+  xhttp.open("POST", "/home/getStatus")
+  xhttp.send(form_data)
 }
 
 // Display the selected room container and hide the others

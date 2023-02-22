@@ -267,12 +267,3 @@ class SelectElement {
   getSelectElement() { return this.select_element }
 
 }
-
-class JsonHousesRoomsDevices {
-  #json_obj
-
-
-  constructor(jsonString) {
-    this.json_obj = JSON.parse(jsonString)
-  }
-}
