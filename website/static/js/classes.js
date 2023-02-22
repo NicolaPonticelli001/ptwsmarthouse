@@ -185,6 +185,8 @@ class Device extends Template {
   #device_name
   #device_id
   #device_type
+  #device_button
+  #status
 
   constructor(elementTemplate, elementContainer, deviceName, deviceId, deviceType) {
     super(elementTemplate, elementContainer)
@@ -202,6 +204,8 @@ class Device extends Template {
       element.id += this.device_id
       element.removeAttribute("data-completeId")
     }
+    this.device_button = super.getClonedContentAsFragment().querySelector("#toggle_status-"+this.device_id)
+    this.status = false
   }
 
   parseDataElements() {
@@ -216,9 +220,24 @@ class Device extends Template {
     }
   }
 
+  setDeviceBtnOn() {
+    this.device_button.classList.remove("btn-danger")
+    this.device_button.classList.add("btn-success")
+    this.device_button.textContent = "ON"
+    this.status = true
+  }
+  setDeviceBtnOff() {
+    this.device_button.classList.remove("btn-success")
+    this.device_button.classList.add("btn-danger")
+    this.device_button.textContent = "OFF"
+    this.status = false
+  }
+
   getDeviceName() { return this.device_name }
   getDeviceId() { return this.device_id }
   getDeviceType() { return this.device_type }
+  getDeviceButton() { return this.device_button }
+  getStatus() { return this.status }
 }
 
 class SelectElement {
