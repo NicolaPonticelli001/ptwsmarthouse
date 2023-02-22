@@ -11,37 +11,90 @@ import time
 import paho.mqtt.client as paho
 from paho import mqtt
 
+# setting callbacks for different events to see if it works, print the message etc.
 def on_connect(client, userdata, flags, rc, properties=None):
     print("CONNACK received with code %s." % rc)
-
+# with this callback you can see if your publish was successful
 def on_publish(client, userdata, mid, properties=None):
     print("mid: " + str(mid))
-
+# print which topic was subscribed to
 def on_subscribe(client, userdata, mid, granted_qos, properties=None):
     print("Subscribed: " + str(mid) + " " + str(granted_qos))
-
+# print message, useful for checking if it was successful
 def on_message(client, userdata, msg):
     print("|Topic: " + msg.topic + "| - |Qos: " + str(msg.qos) + "| - |Payload: " + str(msg.payload) + "|")
-    result=requests.post(f'http://192.168.1.41:9600/device/update_status',data="{} {}".format(msg.topic,msg.payload.decode('utf-8')))
+    result=requests.post(f'http://192.168.1.41:9600/device/update_status_from_device',data="{} {}".format(msg.topic,msg.payload.decode('utf-8')))
     result.close()
 
+client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv5)
 
 app=Flask(__name__)
 app.config["SESSION_PERMANENT"]=False
 app.config["SESSION_TYPE"]="filesystem"
 Session(app)
 
+#route decorator for the index page
 @app.route("/")
 def index():
-	return redirect(url_for('home'))
+	return redirect(url_for('home')) #when the user make the reuest for the route "/" he will be redirect to home page
+	#"url_for" turns the function in a comprehensible link for Flask
+
+@app.route("/login")
+def login():
+	#when is made a request of a resource, the corresponding function has to return the html page in form of template
+	return render_template('login.html')
+
+@app.route("/loginverification",methods=['POST'])
+def loginverification():
+	#check ifthe resource has been requested with POST method
+	if request.method=='POST':
+		#connection to database
+		conn=psycopg2.connect(
+		host="localhost",
+		database="ptw_smart_house_db",
+		user="ptw_admin",
+		password="SUPER_ROOT")
+	
+		cur=conn.cursor()
+		email=request.form['email']
+		password=request.form['password']
+		#query excecution
+		cur.execute('SELECT email,password FROM Customer WHERE email= %s',[email])
+		#check if the user exists in database
+		if cur.rowcount!=0:
+			rows=cur.fetchone()
+			conn.commit()
+	
+			cur.close()
+			conn.close()
+			#check if inserted password corresponds to the (hashing) password stored in the database
+			bcrypt=Bcrypt(app)
+			if bcrypt.check_password_hash(rows[1],password):
+				#create the session for the current user. This determines the access to user's homepage
+				session['user']=request.form['email']
+				return redirect(url_for('home'))
+			else:
+				return redirect(url_for('login'))
+		else:
+			return redirect(url_for('login'))
+	else:
+		return redirect(url_for('login'))
+
+@app.route("/logout")
+def logout():
+	#decstruction of the session of the current user
+	session['user']=None
+	return redirect(url_for('login'))
 
 @app.route("/home")
 def home():
+	#check if the user is logged, if true then redirect him to the his homepage
 	if session.get("user"):
 		return render_template('home.html')
 	else:
 		return redirect(url_for('login'))
 
+#create a json string for displaying all the houses, rooms and devices of the current user in his homepage
 @app.route("/home/userHomeSelection", methods=["POST"])
 def return_house_json():
 	if session.get("user"):
@@ -59,6 +112,7 @@ def return_house_json():
 		query1="SELECT house.idhouse,name FROM House JOIN CustomerHasHouse AS ch ON house.idhouse=ch.idhouse WHERE email=%s"
 		cur_house.execute(query1,[utente])
 		x={}
+		#creating a dynamic dictonary for the conversion of it to a json string
 		for row_house in  cur_house.fetchall():
 			x.update({row_house[0]:{"name":row_house[1]}})
 			query2="SELECT idroom,name FROM Room WHERE idhouse=%s"
@@ -72,6 +126,32 @@ def return_house_json():
 				for row_device in cur_device.fetchall():
 					x[row_house[0]]["stanze"][row_room[0]]["devices"].update({row_device[0]:{"name":row_device[1],"type":row_device[2]}})
 					
+		y=json.dumps(x) #convert a dictonary in a string in json format
+		return y
+	else:
+		return {"status":"session missing"}
+
+@app.route("/home/getStatus",methods=["POST"])
+def get_status():
+	if session.get("user"):
+		house=request.form["house"]
+		conn=psycopg2.connect(
+		host="localhost",
+		database="ptw_smart_house_db",
+		user="ptw_admin",
+		password="SUPER_ROOT")
+		cur_room=conn.cursor()
+		cur_device=conn.cursor()
+		
+		query1="SELECT idroom FROM Room WHERE idhouse=%s"
+		cur_room.execute(query1,[utente])
+		x={}
+		for row_room in cur_room.fetchall():
+			x.update({row_room[0]:{}})
+			query2="SELECT devicecode,onoff FROM IoTDevice WHERE idroom=%s"
+			cur_device.execute(query2,[row_room[0]])
+			for row_device in cur_device.fetchall():
+				x[row_room[0]].update({row_device[0]:row_device[1]})
 		y=json.dumps(x)
 		return y
 	else:
@@ -105,6 +185,8 @@ def update_user():
 	else:
 		return redirect(url_for('home'))
 
+#As the /home/userHomeSelection this route and function work identically, but these are used for display the user data, stored
+#in the database, in the update user data form
 @app.route("/home/account/get_data")
 def return_user_json():
 	if session.get("user"):
@@ -130,46 +212,6 @@ def return_user_json():
 		return y
 	else:
 		return {"status":"session missing"}
-
-@app.route("/login")
-def login():
-	return render_template('login.html')
-	
-@app.route("/logout")
-def logout():
-	session['user']=None
-	return redirect(url_for('login'))
-
-@app.route("/loginverification",methods=['POST'])
-def loginverification():
-	if request.method=='POST':
-		conn=psycopg2.connect(
-		host="localhost",
-		database="ptw_smart_house_db",
-		user="ptw_admin",
-		password="SUPER_ROOT")
-	
-		cur=conn.cursor()
-		email=request.form['email']
-		password=request.form['password']
-		cur.execute('SELECT email,password FROM Customer WHERE email= %s',[email])
-		if cur.rowcount!=0:
-			rows=cur.fetchone()
-			conn.commit()
-	
-			cur.close()
-			conn.close()
-		
-			bcrypt=Bcrypt(app)
-			if bcrypt.check_password_hash(rows[1],password):
-				session['user']=request.form['email']
-				return redirect(url_for('home'))
-			else:
-				return redirect(url_for('login'))
-		else:
-			return redirect(url_for('login'))
-	else:
-		return redirect(url_for('login'))
 
 @app.route("/jserror")
 def error_nojs():
@@ -264,7 +306,7 @@ def login_device():
 def add_device():
 	#Insert iotdevice
 	#"house","room","name","type","onoff=f"
-	if reques.method=="POST":
+	if request.method=="POST":
 		conn=psycopg2.connect(
 		host="localhost",
 		database="ptw_smart_house_db",
@@ -280,8 +322,10 @@ def add_device():
 	else:
 		return json.dumps({"status":"method not allowd"})
 
-@app.route("/device/update_status",methods=["POST"])
-def update_status():
+#route and function for mqtt massages exchanging from device to server_activate
+#in this case it only changes the status
+@app.route("/device/update_status_from_device",methods=["POST"])
+def update_status_device():
 	if request.method=="POST":
 		topic=request.data.decode('utf-8')
 		print(topic)
@@ -327,8 +371,55 @@ def update_status():
 			
 	return {"status":"error"}
 
+@app.route("/device/update_status_from_web",methods=["POST"])
+def update_status_web():
+	if request.method=="POST":
+		mqtt_message=request.form["status"]
+		
+		conn=psycopg2.connect(
+		host="localhost",
+		database="ptw_smart_house_db",
+		user="ptw_admin",
+		password="SUPER_ROOT")
+		cur=conn.cursor()
+		query="UPDATE IoTDevice SET OnOff=%s WHERE devicecode=%s" 
+		cur.execute(query,[mqtt_message,device])
+		conn.commit()
+		conn.close()
+		conn.close()
+		if cur.rowcount==1:
+			return {"status":"updated"}
+		else:
+			return {"status":"error"}
+			
+		return {"status":"error"}
+	else:
+		return {"status":"error"}
+
+@app.route("/device/publish",methods=["POST"])
+def device_publish():
+	if request.method=="POST":
+		payload=request.form["status"]
+		device=request.form["device"]
+		
+		conn=psycopg2.connect(
+		host="localhost",
+		database="ptw_smart_house_db",
+		user="ptw_admin",
+		password="SUPER_ROOT")
+		cur=conn.cursor()
+		
+		query="SELECT idhouse,idroom FROM WHERE devicecode=%s" 
+		cur.execute(query,[device])
+		row=cur.fetchone()
+		topic="{}/{}/{}".format(row[0],row[1],device)
+		client.publish(topic,payload)
+		return {"status":"published"}
+	else:
+		return {"status":"session missing"}
+		
+
 if __name__=="__main__":
-	client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv5)
 	client.on_connect = on_connect
 	client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
 	client.username_pw_set("raspserver", "Raspserver-2023")
