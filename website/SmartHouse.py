@@ -134,7 +134,9 @@ def return_house_json():
 @app.route("/home/getStatus",methods=["POST"])
 def get_status():
 	if session.get("user"):
-		house=request.form["house"]
+		house=request.form.get('house')
+		print(house)
+		
 		conn=psycopg2.connect(
 		host="localhost",
 		database="ptw_smart_house_db",
@@ -144,7 +146,7 @@ def get_status():
 		cur_device=conn.cursor()
 		
 		query1="SELECT idroom FROM Room WHERE idhouse=%s"
-		cur_room.execute(query1,[utente])
+		cur_room.execute(query1,[house])
 		x={}
 		for row_room in cur_room.fetchall():
 			x.update({row_room[0]:{}})
@@ -399,8 +401,10 @@ def update_status_web():
 @app.route("/device/publish",methods=["POST"])
 def device_publish():
 	if request.method=="POST":
-		payload=request.form["status"]
-		device=request.form["device"]
+		payload=request.form.get('status')
+		print(payload)
+		device=request.form.get('device')
+		print(device)
 		
 		conn=psycopg2.connect(
 		host="localhost",
@@ -409,10 +413,14 @@ def device_publish():
 		password="SUPER_ROOT")
 		cur=conn.cursor()
 		
-		query="SELECT idhouse,idroom FROM WHERE devicecode=%s" 
+		query="SELECT idhouse,idroom FROM IoTDevice WHERE devicecode=%s" 
 		cur.execute(query,[device])
 		row=cur.fetchone()
 		topic="{}/{}/{}".format(row[0],row[1],device)
+		if payload=="on":
+			payload="off"
+		else:
+			payload="on"
 		client.publish(topic,payload)
 		return {"status":"published"}
 	else:
