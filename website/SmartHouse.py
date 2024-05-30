@@ -23,7 +23,7 @@ def on_subscribe(client, userdata, mid, granted_qos, properties=None):
 # print message, useful for checking if it was successful
 def on_message(client, userdata, msg):
     print("|Topic: " + msg.topic + "| - |Qos: " + str(msg.qos) + "| - |Payload: " + str(msg.payload) + "|")
-    result=requests.post(f'http://192.168.1.41:9600/device/update_status_from_device',data="{} {}".format(msg.topic,msg.payload.decode('utf-8')))
+    result=requests.post(f'http://localhost:9600/device/update_status_from_device',data="{} {}".format(msg.topic,msg.payload.decode('utf-8')))
     result.close()
 
 client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv5)
@@ -150,11 +150,12 @@ def get_status():
 		x={}
 		for row_room in cur_room.fetchall():
 			x.update({row_room[0]:{}})
-			query2="SELECT devicecode,onoff FROM IoTDevice WHERE idroom=%s"
+			query2="SELECT devicecode, onoff FROM IoTDevice WHERE idroom=%s"
 			cur_device.execute(query2,[row_room[0]])
 			for row_device in cur_device.fetchall():
 				x[row_room[0]].update({row_device[0]:row_device[1]})
 		y=json.dumps(x)
+		print(y)
 		return y
 	else:
 		return {"status":"session missing"}
@@ -361,7 +362,7 @@ def update_status_device():
 		user="ptw_admin",
 		password="SUPER_ROOT")
 		cur=conn.cursor()
-		query="UPDATE IoTDevice SET OnOff=%s WHERE devicecode=%s AND idhouse=%s AND idroom=%s" 
+		query="UPDATE IoTDevice SET onoff=%s WHERE devicecode=%s AND idhouse=%s AND idroom=%s" 
 		cur.execute(query,[mqtt_message,device,house,room])
 		conn.commit()
 		conn.close()
@@ -430,8 +431,9 @@ def device_publish():
 if __name__=="__main__":
 	client.on_connect = on_connect
 	client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
+	#client.username_pw_set("iot_ptwsmarthouse", "5jSx?&eaGhte2K66@")
 	client.username_pw_set("raspserver", "Raspserver-2023")
-	client.connect("6dd678185e194e4ca3c7ffd5fe9abf15.s2.eu.hivemq.cloud", 8883)
+	client.connect("c47870826a024ba0bba4b6c7477a3357.s1.eu.hivemq.cloud", 8883)
 	client.on_subscribe = on_subscribe
 	client.on_message = on_message
 	client.on_publish = on_publish

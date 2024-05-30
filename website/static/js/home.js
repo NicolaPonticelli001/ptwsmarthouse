@@ -1,6 +1,6 @@
 window.addEventListener("load", homeBodyLoad)
 // = '{ "1":{"name":"casa 1","stanze":{"1":{"name":"stanza 1","devices":{"1":{"name":"device 1","type":"son/off"}}},"2":{"name":"stanza 2","devices":{"2":{"name":"device 2","type":"son/off"}}}}}, "2":{"name":"casa 2","stanze":{"1":{"name":"stanza 1","devices":{"3":{"name":"device 3","type":"son/off"}}}}} }'
-let timeout_value = 1500
+let timeout_value = 2500
 let timeout
 // Object with the key names that are inside the json received. If the json structure change
 // then it only needs to change the names here. in this way the code is less dependent from json key names
@@ -21,7 +21,7 @@ function homeBodyLoad() {
   const xhttp = new XMLHttpRequest()
   xhttp.onload = function() {
     let str = '{"1":{"name": "Casa al mare", "stanze": {"1": {"name": "Saloon", "devices": {"10": {"name": "ESP-SmartTv", "type": "Smart ON/OFF"}}}, "6": {"name": "bathroom", "devices": {"11": {"name": "Arduino-Termostato", "type": "Smart Regulation"}}}}}, "2": {"name": "Casa", "stanze": {"2": {"name": "kitchen", "devices": {"12": {"name": "Smart-Fridge", "type": "Smart List"}, "14": {"name": "Smart-AirConditioner", "type": "Smart Regulation"}}}, "3": {"name": "saloon", "devices": {"13": {"name": "ESP-SmartTv", "type": "Smart ON/OFF"}}}}}, "4": {"name": "Mountain house", "stanze": {"7": {"name": "cucina", "devices": {"18": {"name": "ArduinoSolarPanel", "type": "Smart Report"}}}}}}'
-    json_parsed = JSON.parse(str)
+    json_parsed = JSON.parse(this.responseText)
 
     // Set the two select
     let obj_array_id_value_option
@@ -37,7 +37,6 @@ function homeBodyLoad() {
     for (let room of rooms_obj) {
       for (let device of room.getDevices()) {
         device.getDeviceButton().addEventListener("click", function() { changeStatus(device) })
-        console.log(device.getDeviceButton())
       }
     }
 
@@ -77,7 +76,7 @@ function changeStatus(device) {
   console.log("change status of device " + device.getDeviceName())
   const xhttp = new XMLHttpRequest()
   const form_data = new FormData()
-  form_data.append("status", (device.getStatus()) ? "off" : "on")   //If the current status is off then turn the device on
+  form_data.append("status", (device.getStatus()) ? "on" : "off")   //If the current status is off then turn the device on
   form_data.append("device", device.getDeviceId())
   
   xhttp.onload = function() {
@@ -98,10 +97,11 @@ function getDevicesStatus() {
 
     //let str_status = '{"1": {"10": false}, "6": {"11": false}, "2": {"12": false, "14": false}, "3": {"13": false}, "7": {"18": false}}'
     let json_status = JSON.parse(this.responseText)
+    console.log(json_status)
 
     for (let room of rooms_obj) {
       for (let device of room.getDevices()) {
-        if (json_status[room.getRoomId()][device.getDeviceId()]) {
+        if (json_status[room.getRoomId()][device.getDeviceId()] == "1") {
           device.setDeviceBtnOn()
         } else device.setDeviceBtnOff()
       }
